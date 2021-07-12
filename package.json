@@ -67,7 +67,7 @@
       },
       "configuration": {
          "type": "object",
-         "title": "Growi Client Configuration",
+         "title": "Growi Client",
          "properties": {
             "growi-client.growiAddress": {
                "type": "string",
