@@ -26,9 +26,9 @@
             "title": "Clear Api Token"
          },
          {
-            "command": "growi-client.setGrowiAddress",
+            "command": "growi-client.setGrowiUrl",
             "category": "Growi Client",
-            "title": "Set Growi Address"
+            "title": "Set Growi Url"
          },
          {
             "command": "growi-client.pageExplorer.refresh",
@@ -69,7 +69,7 @@
          "type": "object",
          "title": "Growi Client",
          "properties": {
-            "growi-client.growiAddress": {
+            "growi-client.growiUrl": {
                "type": "string",
                "default": null
             }

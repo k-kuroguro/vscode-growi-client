@@ -10,10 +10,10 @@ export class ApiController {
    constructor(private store: Store) { }
 
    async getPages(path?: string): Promise<PageList | undefined> {
-      const [growiAddress, apiToken] = this.getAddressAndToken();
-      if (!growiAddress || !apiToken) return;
+      const [growiUrl, apiToken] = this.getUrlAndToken();
+      if (!growiUrl || !apiToken) return;
 
-      const url = `${growiAddress}_api/pages.list?access_token=${apiToken}&path=${encodeURI(path ?? '/')}`;
+      const url = `${growiUrl}_api/pages.list?access_token=${apiToken}&path=${encodeURI(path ?? '/')}`;
       const response = await axios.get(url).catch(e => {
          this.handleError(e);
          return undefined;
@@ -23,10 +23,10 @@ export class ApiController {
    }
 
    async getPage(path: string): Promise<Page | undefined> {
-      const [growiAddress, apiToken] = this.getAddressAndToken();
-      if (!growiAddress || !apiToken) return;
+      const [growiUrl, apiToken] = this.getUrlAndToken();
+      if (!growiUrl || !apiToken) return;
 
-      const url = `${growiAddress}_api/pages.get?access_token=${apiToken}&path=${encodeURI(path)}`;
+      const url = `${growiUrl}_api/pages.get?access_token=${apiToken}&path=${encodeURI(path)}`;
       const response = await axios.get(url).catch(e => {
          this.handleError(e);
          return undefined;
@@ -36,13 +36,13 @@ export class ApiController {
    }
 
    async updatePage(path: string, body: string): Promise<Page | undefined> {
-      const [growiAddress, apiToken] = this.getAddressAndToken();
-      if (!growiAddress || !apiToken) return;
+      const [growiUrl, apiToken] = this.getUrlAndToken();
+      if (!growiUrl || !apiToken) return;
 
       const pageInfo = await this.getPage(path);
       if (!pageInfo || !pageInfo.page.id || !pageInfo.page.revision._id) return;
 
-      const url = `${growiAddress}_api/pages.update`;
+      const url = `${growiUrl}_api/pages.update`;
       const response = await axios.post(url, {
          access_token: apiToken,
          page_id: pageInfo.page.id,
@@ -61,12 +61,11 @@ export class ApiController {
       window.showErrorMessage(e.message ? e.message : e);
    }
 
-   //TODO: 設定コマンドに飛ぶようにする
-   private getAddressAndToken(): [string | undefined, string | undefined] {
-      const [growiAddress, apiToken] = [Config.growiAddress, this.store.apiToken];
-      if (!growiAddress) window.showErrorMessage('Growiのアドレスが設定されていません。');
+   private getUrlAndToken(): [string | undefined, string | undefined] {
+      const [growiUrl, apiToken] = [Config.growiUrl, this.store.apiToken];
+      if (!growiUrl) window.showErrorMessage('GrowiのUrlが設定されていません。');
       if (!apiToken) window.showErrorMessage('Api Tokenが設定されていません。');
-      return [growiAddress, apiToken];
+      return [growiUrl, apiToken];
    }
 
 }

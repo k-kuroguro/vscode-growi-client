@@ -6,7 +6,7 @@ export function registerCommands(store: Store): Disposable[] {
    return [
       commands.registerCommand('growi-client.setApiToken', () => setApiToken(store)),
       commands.registerCommand('growi-client.clearApiToken', () => clearApiToken(store)),
-      commands.registerCommand('growi-client.setGrowiAddress', () => setGrowiAddress())
+      commands.registerCommand('growi-client.setGrowiUrl', () => setGrowiUrl())
    ];
 }
 
@@ -28,13 +28,13 @@ function clearApiToken(store: Store): void {
    store.apiToken = undefined;
 }
 
-async function setGrowiAddress(): Promise<boolean> {
-   const address = await window.showInputBox({
-      value: Config.growiAddress ?? '',
-      prompt: 'Growiのアドレスを入力してください。',
+async function setGrowiUrl(): Promise<boolean> {
+   const url = await window.showInputBox({
+      value: Config.growiUrl ?? '',
+      prompt: 'GrowiのUrlを入力してください。',
       placeHolder: 'https://demo.growi.org/'
    });
-   if (!address || address === '') return false;
-   Config.growiAddress = address;
+   if (!url || url === '') return false;
+   Config.growiUrl = url;
    return true;
 }

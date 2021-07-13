@@ -94,7 +94,7 @@ export class PageExplorer {
       this.disposables.push(
          this.treeView,
          vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('growi-client.growiAddress')) {
+            if (e.affectsConfiguration('growi-client.growiUrl')) {
                this.treeDataProvider.refresh();
             }
          }),
