@@ -65,6 +65,14 @@
             }
          ]
       },
+      "languages": [
+         {
+            "id": "markdown",
+            "extensions": [
+               ".growi"
+            ]
+         }
+      ],
       "configuration": {
          "type": "object",
          "title": "Growi Client",
