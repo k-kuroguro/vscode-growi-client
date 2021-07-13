@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { window } from 'vscode';
+import { commands, window } from 'vscode';
 import { Config } from '../config';
 import { Store } from '../store';
 
@@ -11,6 +11,7 @@ export class ApiController {
 
    async getPages(path?: string): Promise<PageList | undefined> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      this.showErrorAboutSettings(!!growiUrl, !!apiToken);
       if (!growiUrl || !apiToken) return;
 
       const url = `${growiUrl}_api/pages.list?access_token=${apiToken}&path=${encodeURI(path ?? '/')}`;
@@ -24,6 +25,7 @@ export class ApiController {
 
    async getPage(path: string): Promise<Page | undefined> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      this.showErrorAboutSettings(!!growiUrl, !!apiToken);
       if (!growiUrl || !apiToken) return;
 
       const url = `${growiUrl}_api/pages.get?access_token=${apiToken}&path=${encodeURI(path)}`;
@@ -37,6 +39,7 @@ export class ApiController {
 
    async updatePage(path: string, body: string): Promise<Page | undefined> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      this.showErrorAboutSettings(!!growiUrl, !!apiToken);
       if (!growiUrl || !apiToken) return;
 
       const pageInfo = await this.getPage(path);
@@ -62,10 +65,26 @@ export class ApiController {
    }
 
    private getUrlAndToken(): [string | undefined, string | undefined] {
-      const [growiUrl, apiToken] = [Config.growiUrl, this.store.apiToken];
-      if (!growiUrl) window.showErrorMessage('GrowiのUrlが設定されていません。');
-      if (!apiToken) window.showErrorMessage('Api Tokenが設定されていません。');
-      return [growiUrl, apiToken];
+      return [Config.growiUrl, this.store.apiToken];
+   }
+
+   private async showErrorAboutSettings(hasSetUrl: boolean, hasSetToken: boolean): Promise<void> {
+      if (hasSetUrl && hasSetToken) return;
+      if (!hasSetUrl && !hasSetToken) {
+         window.showErrorMessage('GrowiのUrl, Api Tokenが設定されていません。');
+         //TODO: multi step input
+         return;
+      }
+      if (hasSetToken) {
+         const selected = await window.showErrorMessage('GrowiのUrlが設定されていません。', '設定');
+         if (selected) commands.executeCommand('growi-client.setGrowiUrl');
+         return;
+      }
+      if (hasSetUrl) {
+         const selected = await window.showErrorMessage('Api Tokenが設定されていません。', '設定');
+         if (selected) commands.executeCommand('growi-client.setApiToken');
+         return;
+      }
    }
 
 }
