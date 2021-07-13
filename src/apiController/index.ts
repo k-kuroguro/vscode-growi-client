@@ -1,35 +1,15 @@
 import axios from 'axios';
 import { window } from 'vscode';
-import { Config } from './config';
-import { Store } from './store';
+import { Config } from '../config';
+import { Store } from '../store';
 
-type PageListResponse = {
-   pages: [
-      {
-         id: string,
-         path: string
-      }
-   ]
-};
-
-type PageResponse = {
-   page: {
-      id: string,
-      path: string,
-      revision: {
-         _id: string,
-         path: string,
-         body: string,
-         format: string
-      }
-   }
-};
+import { Page, PageList } from './types';
 
 export class ApiController {
 
    constructor(private store: Store) { }
 
-   async getPages(path?: string): Promise<PageListResponse | undefined> {
+   async getPages(path?: string): Promise<PageList | undefined> {
       const [growiAddress, apiToken] = this.getAddressAndToken();
       if (!growiAddress || !apiToken) return;
 
@@ -39,10 +19,10 @@ export class ApiController {
          return undefined;
       });
       if (!response || !response.data.ok) return;
-      return response.data as PageListResponse;
+      return response.data as PageList;
    }
 
-   async getPage(path: string): Promise<PageResponse | undefined> {
+   async getPage(path: string): Promise<Page | undefined> {
       const [growiAddress, apiToken] = this.getAddressAndToken();
       if (!growiAddress || !apiToken) return;
 
@@ -52,10 +32,10 @@ export class ApiController {
          return undefined;
       });
       if (!response || !response.data.ok) return;
-      return response.data as PageResponse;
+      return response.data as Page;
    }
 
-   async updatePage(path: string, body: string): Promise<PageResponse | undefined> {
+   async updatePage(path: string, body: string): Promise<Page | undefined> {
       const [growiAddress, apiToken] = this.getAddressAndToken();
       if (!growiAddress || !apiToken) return;
 
@@ -74,7 +54,7 @@ export class ApiController {
       });
       if (!response || !response.data.ok) return;
 
-      return response.data as PageResponse;
+      return response.data as Page;
    }
 
    private handleError(e: any): void {
