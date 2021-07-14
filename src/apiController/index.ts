@@ -19,6 +19,7 @@ export class ApiController {
          this.handleError(e);
          return undefined;
       });
+      if (response?.data?.error) window.showErrorMessage(response.data.error);
       if (!response || !response.data.ok) return;
       return response.data as PageList;
    }
@@ -33,6 +34,7 @@ export class ApiController {
          this.handleError(e);
          return undefined;
       });
+      if (response?.data?.error) window.showErrorMessage(response.data.error);
       if (!response || !response.data.ok) return;
       return response.data as Page;
    }
@@ -55,12 +57,25 @@ export class ApiController {
          this.handleError(e);
          return undefined;
       });
+      if (response?.data?.error) window.showErrorMessage(response.data.error);
       if (!response || !response.data.ok) return;
 
       return response.data as Page;
    }
 
    private handleError(e: any): void {
+      if (axios.isAxiosError(e)) {
+         if (e.response) {
+            window.showErrorMessage(e.response.data);
+            window.showErrorMessage(e.response.status.toString() + e.response.statusText);
+            window.showErrorMessage(e.response.headers);
+         } else if (e.request) {
+            window.showErrorMessage(e.request);
+         } else {
+            window.showErrorMessage('Error', e.message);
+         }
+         return;
+      }
       window.showErrorMessage(e.message ? e.message : e);
    }
 
