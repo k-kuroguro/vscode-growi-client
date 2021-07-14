@@ -80,6 +80,26 @@
             "growi-client.growiUrl": {
                "type": "string",
                "default": null
+            },
+            "growi-client.loggingLevel": {
+               "type": "string",
+               "enum": [
+                  "off",
+                  "fatal",
+                  "error",
+                  "warn",
+                  "info",
+                  "debug",
+                  "trace"
+               ],
+               "default": "error",
+               "description": "off < fatal < error < warn < info < debug < trace",
+               "scope": "window"
+            },
+            "growi-client.sourceLocationTracking": {
+               "type": "boolean",
+               "default": false,
+               "scope": "window"
             }
          }
       }
@@ -112,6 +132,8 @@
       "webpack-cli": "^4.4.0"
    },
    "dependencies": {
+      "@vscode-logging/types": "^0.1.4",
+      "@vscode-logging/wrapper": "^1.0.1",
       "axios": "^0.21.1"
    }
 }
