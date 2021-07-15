@@ -7,6 +7,7 @@ import { initLogger } from './logger';
 
 //TODO: ツリー,ページ内容のキャッシュ
 //TODO: ViewWelcome
+//TODO: ApiCOntrolerはエラーを投げるだけにする => 呼び出し元で色々する
 
 export async function activate(context: vscode.ExtensionContext) {
    const store = new Store(context.globalState);
