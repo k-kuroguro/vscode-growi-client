@@ -6,7 +6,7 @@ suite('Extension Test Suite', () => {
    const timeout = async (ms = 200) => new Promise(resolve => setTimeout(resolve, ms));
 
    suiteSetup(() => {
-      extension = vscode.extensions.getExtension('k-kuroguro.md-footer') as vscode.Extension<any>;
+      extension = vscode.extensions.getExtension('k-kuroguro.growi-client') as vscode.Extension<any>;
    });
 
    test('Activation test', async () => {
