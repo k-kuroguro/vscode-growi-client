@@ -109,6 +109,7 @@
       "webpack:dev": "webpack --mode development",
       "webpack:prod": "webpack --mode production --devtool hidden-source-map",
       "webpack:watch": "webpack --watch",
+      "watch": "npm run webpack:watch",
       "tsc": "tsc -p ./",
       "tsc:watch": "tsc -watch -p ./",
       "test-compile": "run-p webpack:dev tsc",
