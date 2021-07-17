@@ -31,7 +31,7 @@ function clearApiToken(store: Store): void {
 async function setGrowiUrl(): Promise<boolean> {
    const url = await window.showInputBox({
       value: Config.growiUrl ?? '',
-      prompt: 'GrowiのUrlを入力してください。',
+      prompt: 'GrowiのURLを入力してください。',
       placeHolder: 'https://demo.growi.org/'
    });
    if (!url || url === '') return false;

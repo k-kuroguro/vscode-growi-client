@@ -1,13 +1,14 @@
 import { TextEncoder } from 'util';
-import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat as VsFileStat, FileSystemProvider, FileType, Uri } from 'vscode';
-import { ApiController } from './apiController';
+import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat as VsFileStat, FileSystemProvider, FileType, Uri, window } from 'vscode';
+import { ApiClient, ApiClientError } from './apiClient';
+import { SettingsError } from './error';
 
 export class FsProvider implements FileSystemProvider {
 
    private _onDidChangeFile: EventEmitter<FileChangeEvent[]> = new EventEmitter();
    readonly onDidChangeFile: Event<FileChangeEvent[]> = this._onDidChangeFile.event;
 
-   constructor(private readonly apiController: ApiController) { }
+   constructor(private readonly apiClient: ApiClient) { }
 
    //TODO: サーバー側の変更を検知する
    watch(uri: Uri, options: { recursive: boolean; excludes: string[]; }): Disposable {
@@ -30,14 +31,22 @@ export class FsProvider implements FileSystemProvider {
    }
 
    async readFile(uri: Uri): Promise<Uint8Array> {
-      const response = await this.apiController.getPage(this.removeExt(uri.path));
-      if (!response) throw new Error('Failed to get page.');
-      return this.toUint8Array(response.page.revision.body);
+      const response = await this.apiClient
+         .getPage(this.removeExt(uri.path))
+         .catch(e => {
+            if (e instanceof ApiClientError || e instanceof SettingsError) throw e.message;
+            throw e;
+         });
+      return this.toUint8Array(response.revision.body);
    }
 
    async writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean; }): Promise<void> {
-      const response = await this.apiController.updatePage(this.removeExt(uri.path), content.toString());
-      if (!response) throw new Error('Failed to update page.');
+      await this.apiClient
+         .updatePage(this.removeExt(uri.path), content.toString())
+         .catch(e => {
+            if (e instanceof ApiClientError || e instanceof SettingsError) throw e.message;
+            throw e;
+         });
    }
 
    delete(uri: Uri, options: { recursive: boolean; }): void | Thenable<void> {

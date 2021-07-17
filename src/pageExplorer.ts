@@ -1,6 +1,30 @@
 import * as vscode from 'vscode';
-import { ApiController } from './apiController';
+import { ApiClient, ApiClientError } from './apiClient';
+import { SettingsError } from './error';
 import { FsProvider } from './fsProvider';
+
+class Util {
+
+   static async showErrorAboutSettings(hasSetUrl: boolean, hasSetToken: boolean): Promise<void> {
+      if (hasSetUrl && hasSetToken) return;
+      if (!hasSetUrl && !hasSetToken) {
+         vscode.window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません。');
+         //TODO: support multi step input
+         return;
+      }
+      if (hasSetToken) {
+         const selected = await vscode.window.showErrorMessage('GrowiのURLが設定されていません。', '設定');
+         if (selected) vscode.commands.executeCommand('growi-client.setGrowiUrl');
+         return;
+      }
+      if (hasSetUrl) {
+         const selected = await vscode.window.showErrorMessage('Api Tokenが設定されていません。', '設定');
+         if (selected) vscode.commands.executeCommand('growi-client.setApiToken');
+         return;
+      }
+   }
+
+}
 
 class Page extends vscode.TreeItem {
 
@@ -19,7 +43,7 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
    private _onDidChangeTreeData: vscode.EventEmitter<Page | undefined | void> = new vscode.EventEmitter<Page | undefined | void>();
    readonly onDidChangeTreeData: vscode.Event<Page | undefined | void> = this._onDidChangeTreeData.event;
 
-   constructor(private readonly apiController: ApiController) { }
+   constructor(private readonly apiClient: ApiClient) { }
 
    refresh(): void {
       this._onDidChangeTreeData.fire();
@@ -30,13 +54,20 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
    }
 
    async getChildren(element?: Page): Promise<Page[]> {
-      const response = await this.apiController.getPages(element && element.fullPath !== '/' ? element.fullPath + '/' : undefined);
-      if (!response) return [];
+      const response = await this.apiClient.getPages(element && element.fullPath !== '/' ? element.fullPath + '/' : undefined)
+         .catch(e => {
+            if (e instanceof ApiClientError) {
+               vscode.window.showErrorMessage(e.message);
+            } else if (e instanceof SettingsError) {
+               vscode.window.showErrorMessage(e.message);
+            }
+            throw e;
+         });
 
       if (!element) {
          const title = 'root', fullPath = '/';
          let isBlank: boolean = true, hasChildren: boolean = false;
-         for (const responsePage of response.pages) {
+         for (const responsePage of response) {
             if (responsePage.path.match(/^\/.*?\/.*/g)) hasChildren = true;
             if (responsePage.path === '/') isBlank = false;
             if (!isBlank && hasChildren) break;
@@ -46,7 +77,7 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
 
       const pageMap: Map<string, { fullPath: string, hasChildren: boolean, isBlank: boolean }> = new Map();
 
-      for (const responsePage of response.pages) {
+      for (const responsePage of response) {
          if (responsePage.path === '/') continue;
 
          const path = (element.fullPath !== '/' ? responsePage.path.replace(element.fullPath, '') : responsePage.path).replace(/^\//, '');
@@ -86,9 +117,9 @@ export class PageExplorer {
    private readonly disposables: vscode.Disposable[] = [];
    private readonly scheme = 'growi';
 
-   constructor(apiController: ApiController) {
-      this.fsProvider = new FsProvider(apiController);
-      this.treeDataProvider = new TreeDataProvider(apiController);
+   constructor(apiClient: ApiClient) {
+      this.fsProvider = new FsProvider(apiClient);
+      this.treeDataProvider = new TreeDataProvider(apiClient);
       this.treeView = vscode.window.createTreeView('growi-client.pageExplorer', { treeDataProvider: this.treeDataProvider, canSelectMany: false, showCollapseAll: true });
 
       this.disposables.push(

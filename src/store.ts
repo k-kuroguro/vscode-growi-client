@@ -8,6 +8,11 @@ export class Store {
       state.setKeysForSync(['apiToken']);
    }
 
+   /**
+    * URLエンコード, 先頭/末尾のスペース除去済みのApi Token.
+    * @remarks
+    * チェックはしていないが, 通常末尾にイコール(=)がつく.
+    */
    set apiToken(token: string | undefined) {
       if (token) token = encodeURI(token.trim());
       this.state.update('apiToken', token);
