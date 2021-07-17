@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import { ApiClient, ApiClientError } from './apiClient';
-import { SettingsError } from './error';
+import { Setting, SettingsError, Util as ConfigUtil } from './setting';
 import { FsProvider } from './fsProvider';
-import { Util as ConfigUtil } from './config';
 
 class Page extends vscode.TreeItem {
 
@@ -102,18 +101,14 @@ export class PageExplorer {
    private readonly disposables: vscode.Disposable[] = [];
    private readonly scheme = 'growi';
 
-   constructor(apiClient: ApiClient) {
+   constructor(private readonly setting: Setting, apiClient: ApiClient) {
       this.fsProvider = new FsProvider(apiClient);
       this.treeDataProvider = new TreeDataProvider(apiClient);
       this.treeView = vscode.window.createTreeView('growi-client.pageExplorer', { treeDataProvider: this.treeDataProvider, canSelectMany: false, showCollapseAll: true });
 
       this.disposables.push(
          this.treeView,
-         vscode.workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('growi-client.growiUrl')) {
-               this.treeDataProvider.refresh();
-            }
-         }),
+         this.setting.onDidChange(() => this.treeDataProvider.refresh()),
          vscode.workspace.registerFileSystemProvider(this.scheme, this.fsProvider, { isCaseSensitive: true }),
          ...this.registerCommands()
       );

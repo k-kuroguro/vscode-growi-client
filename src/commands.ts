@@ -1,16 +1,15 @@
-import { commands, Disposable, Uri, window } from 'vscode';
-import { Config } from './config';
-import { Store } from './store';
+import { commands, Disposable, window } from 'vscode';
+import { Setting } from './setting';
 
-export function registerCommands(store: Store): Disposable[] {
+export function registerCommands(setting: Setting): Disposable[] {
    return [
-      commands.registerCommand('growi-client.setApiToken', () => setApiToken(store)),
-      commands.registerCommand('growi-client.clearApiToken', () => clearApiToken(store)),
-      commands.registerCommand('growi-client.setGrowiUrl', () => setGrowiUrl())
+      commands.registerCommand('growi-client.setApiToken', () => setApiToken(setting)),
+      commands.registerCommand('growi-client.clearApiToken', () => clearApiToken(setting)),
+      commands.registerCommand('growi-client.setGrowiUrl', () => setGrowiUrl(setting))
    ];
 }
 
-async function setApiToken(store: Store): Promise<boolean> {
+async function setApiToken(setting: Setting): Promise<boolean> {
    const token = await window.showInputBox({
       value: '',
       prompt: 'api tokenを入力してください。',
@@ -20,21 +19,21 @@ async function setApiToken(store: Store): Promise<boolean> {
       }
    });
    if (!token || token === '') return false;
-   store.apiToken = token;
+   setting.apiToken = token;
    return true;
 }
 
-function clearApiToken(store: Store): void {
-   store.apiToken = undefined;
+function clearApiToken(setting: Setting): void {
+   setting.apiToken = undefined;
 }
 
-async function setGrowiUrl(): Promise<boolean> {
+async function setGrowiUrl(setting: Setting): Promise<boolean> {
    const url = await window.showInputBox({
-      value: Config.growiUrl ?? '',
+      value: setting.growiUrl ?? '',
       prompt: 'GrowiのURLを入力してください。',
       placeHolder: 'https://demo.growi.org/'
    });
    if (!url || url === '') return false;
-   Config.growiUrl = url;
+   setting.growiUrl = url;
    return true;
 }

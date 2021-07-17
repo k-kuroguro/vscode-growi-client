@@ -1,8 +1,7 @@
 import { TextEncoder } from 'util';
 import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat as VsFileStat, FileSystemProvider, FileType, Uri, window } from 'vscode';
 import { ApiClient, ApiClientError } from './apiClient';
-import { SettingsError } from './error';
-import { Util as ConfigUtil } from './config';
+import { SettingsError, Util as ConfigUtil } from './setting';
 
 export class FsProvider implements FileSystemProvider {
 
@@ -62,6 +61,7 @@ export class FsProvider implements FileSystemProvider {
       return path.replace(/.growi$/g, '');
    }
 
+   //TODO: エラー発生時, ツリービューを更新する. (onDidChangeFileを発火させる)
    private handleError(e: any): never {
       if (e instanceof ApiClientError) {
          throw e.message;

@@ -1,7 +1,5 @@
 import axios from 'axios';
-import { Config } from '../config';
-import { SettingsError } from '../error';
-import { Store } from '../store';
+import { Setting, SettingsError, SettingName } from '../setting';
 import { ApiClientError } from './error';
 import { Page, PageList } from './types';
 
@@ -9,7 +7,7 @@ export { ApiClientError } from './error';
 
 export class ApiClient {
 
-   constructor(private store: Store) { }
+   constructor(private setting: Setting) { }
 
    /**
     * パス配下のページ一覧を取得する.
@@ -72,12 +70,13 @@ export class ApiClient {
       return false;
    }
 
+   //TODO: 今はApi Tokenが必須になっているが, 必要ない処理もあるので要修正.
    private getUrlAndToken(): [string, string] {
-      const [growiUrl, apiToken] = [Config.growiUrl, this.store.apiToken];
+      const [growiUrl, apiToken] = [this.setting.growiUrl, this.setting.apiToken];
 
       if (growiUrl && apiToken) return [growiUrl, apiToken];
 
-      const undefinedSettings: string[] = [];
+      const undefinedSettings: SettingName[] = [];
       if (!growiUrl) undefinedSettings.push('Growi URL');
       if (!apiToken) undefinedSettings.push('Api Token');
       throw SettingsError.UndefinedSettings(undefinedSettings);
