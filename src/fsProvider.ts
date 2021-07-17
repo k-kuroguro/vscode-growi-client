@@ -2,6 +2,7 @@ import { TextEncoder } from 'util';
 import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat as VsFileStat, FileSystemProvider, FileType, Uri, window } from 'vscode';
 import { ApiClient, ApiClientError } from './apiClient';
 import { SettingsError } from './error';
+import { Util as ConfigUtil } from './config';
 
 export class FsProvider implements FileSystemProvider {
 
@@ -33,20 +34,14 @@ export class FsProvider implements FileSystemProvider {
    async readFile(uri: Uri): Promise<Uint8Array> {
       const response = await this.apiClient
          .getPage(this.removeExt(uri.path))
-         .catch(e => {
-            if (e instanceof ApiClientError || e instanceof SettingsError) throw e.message;
-            throw e;
-         });
+         .catch(e => this.handleError(e));
       return this.toUint8Array(response.revision.body);
    }
 
    async writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean; }): Promise<void> {
       await this.apiClient
          .updatePage(this.removeExt(uri.path), content.toString())
-         .catch(e => {
-            if (e instanceof ApiClientError || e instanceof SettingsError) throw e.message;
-            throw e;
-         });
+         .catch(e => this.handleError(e));
    }
 
    delete(uri: Uri, options: { recursive: boolean; }): void | Thenable<void> {
@@ -65,6 +60,16 @@ export class FsProvider implements FileSystemProvider {
 
    private removeExt(path: string): string {
       return path.replace(/.growi$/g, '');
+   }
+
+   private handleError(e: any): never {
+      if (e instanceof ApiClientError) {
+         throw e.message;
+      } else if (e instanceof SettingsError) {
+         if (e.code === SettingsError.UndefinedSettings([]).code) ConfigUtil.showErrorAboutSettings(!e.hasError('Growi URL'), !e.hasError('Api Token'));
+         throw e.message;
+      }
+      throw e;
    }
 
 }

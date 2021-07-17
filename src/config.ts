@@ -1,4 +1,4 @@
-import { workspace, ConfigurationTarget } from 'vscode';
+import { commands, window, workspace, ConfigurationTarget } from 'vscode';
 
 export class Config {
 
@@ -21,6 +21,29 @@ export class Config {
          url = encodeURI(url);
       }
       workspace.getConfiguration('growi-client').update('growiUrl', url, ConfigurationTarget.Global);
+   }
+
+}
+
+export class Util {
+
+   static async showErrorAboutSettings(hasSetUrl: boolean, hasSetToken: boolean): Promise<void> {
+      if (hasSetUrl && hasSetToken) return;
+      if (!hasSetUrl && !hasSetToken) {
+         window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません。');
+         //TODO: support multi step input.
+         return;
+      }
+      if (hasSetToken) {
+         const selected = await window.showErrorMessage('GrowiのURLが設定されていません。', '設定');
+         if (selected) commands.executeCommand('growi-client.setGrowiUrl');
+         return;
+      }
+      if (hasSetUrl) {
+         const selected = await window.showErrorMessage('Api Tokenが設定されていません。', '設定');
+         if (selected) commands.executeCommand('growi-client.setApiToken');
+         return;
+      }
    }
 
 }

@@ -2,29 +2,7 @@ import * as vscode from 'vscode';
 import { ApiClient, ApiClientError } from './apiClient';
 import { SettingsError } from './error';
 import { FsProvider } from './fsProvider';
-
-class Util {
-
-   static async showErrorAboutSettings(hasSetUrl: boolean, hasSetToken: boolean): Promise<void> {
-      if (hasSetUrl && hasSetToken) return;
-      if (!hasSetUrl && !hasSetToken) {
-         vscode.window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません。');
-         //TODO: support multi step input.
-         return;
-      }
-      if (hasSetToken) {
-         const selected = await vscode.window.showErrorMessage('GrowiのURLが設定されていません。', '設定');
-         if (selected) vscode.commands.executeCommand('growi-client.setGrowiUrl');
-         return;
-      }
-      if (hasSetUrl) {
-         const selected = await vscode.window.showErrorMessage('Api Tokenが設定されていません。', '設定');
-         if (selected) vscode.commands.executeCommand('growi-client.setApiToken');
-         return;
-      }
-   }
-
-}
+import { Util as ConfigUtil } from './config';
 
 class Page extends vscode.TreeItem {
 
@@ -58,11 +36,18 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
          .catch(e => {
             if (e instanceof ApiClientError) {
                vscode.window.showErrorMessage(e.message);
+               return undefined;
             } else if (e instanceof SettingsError) {
-               vscode.window.showErrorMessage(e.message);
+               if (e.code === SettingsError.UndefinedSettings().code) {
+                  ConfigUtil.showErrorAboutSettings(!e.hasError('Growi URL'), !e.hasError('Api Token'));
+                  return undefined;
+               }
+               else throw e;
             }
             throw e;
          });
+
+      if (!response) return [];
 
       if (!element) {
          const title = 'root', fullPath = '/';
