@@ -9,7 +9,7 @@ class Util {
       if (hasSetUrl && hasSetToken) return;
       if (!hasSetUrl && !hasSetToken) {
          vscode.window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません。');
-         //TODO: support multi step input
+         //TODO: support multi step input.
          return;
       }
       if (hasSetToken) {

@@ -20,6 +20,10 @@ export class ApiClientError extends BaseError {
       return new ApiClientError(`${path} が見つかりません.`, this.name);
    }
 
+   static PageHasMovedToTrash(path: string): ApiClientError {
+      return new ApiClientError(`${path} は /trash${path} に移動しました.`, this.name);
+   }
+
    static Other(message: string): ApiClientError {
       return new ApiClientError(message, this.name);
    }

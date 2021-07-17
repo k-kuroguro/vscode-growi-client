@@ -4,8 +4,9 @@ import { Store } from './store';
 import { ApiClient } from './apiClient';
 import { PageExplorer } from './pageExplorer';
 
-//TODO: ツリー,ページ内容のキャッシュ
+//TODO: ツリー, ページ内容のキャッシュ.
 //TODO: ViewWelcome
+//TODO: trashの中身も表示・編集できる.
 
 export async function activate(context: vscode.ExtensionContext) {
    const store = new Store(context.globalState);

@@ -10,12 +10,12 @@ export class FsProvider implements FileSystemProvider {
 
    constructor(private readonly apiClient: ApiClient) { }
 
-   //TODO: サーバー側の変更を検知する
+   //TODO: サーバー側の変更を検知する.
    watch(uri: Uri, options: { recursive: boolean; excludes: string[]; }): Disposable {
       return { dispose: () => { } };
    }
 
-   //TODO: pages.getで得られるデータを返すようにする
+   //TODO: pages.getで得られるデータを返すようにする.
    stat(uri: Uri): FileStat | Thenable<FileStat> {
       return new FileStat();
    }
@@ -69,7 +69,7 @@ export class FsProvider implements FileSystemProvider {
 
 }
 
-//TODO: pages.getで得られるデータを表せるようにする
+//TODO: pages.getで得られるデータを表せるようにする.
 class FileStat implements VsFileStat {
 
    constructor() { }
