@@ -21,6 +21,7 @@ export class Setting {
             if (e.affectsConfiguration('growi-client.growiUrl')) this._onDidChange.fire('Growi URL');
          })
       );
+      this.apiTokenIsUndefined = !!this.apiToken;
    }
 
    dispose(): void {
@@ -38,6 +39,7 @@ export class Setting {
       if (token) token = encodeURI(token.trim());
       this.state.update('apiToken', token);
       this._onDidChange.fire('Api Token');
+      this.apiTokenIsUndefined = !!token;
    }
 
    get apiToken(): string | undefined {
@@ -72,6 +74,14 @@ export class Setting {
 
    //#endregion
 
+   //#region context
+
+   set apiTokenIsUndefined(isUndefined: boolean) {
+      commands.executeCommand('setContext', 'growi-client.apiTokenIsUndefined', isUndefined);
+   }
+
+   //#endregion
+
 }
 
 export class SettingsError extends BaseError {
@@ -80,10 +90,6 @@ export class SettingsError extends BaseError {
 
    private constructor(message: string, public code: string, private settings: string[]) {
       super(message);
-   }
-
-   hasError(setting: SettingName): boolean {
-      return this.settings.includes(setting);
    }
 
    static UndefinedSettings(settings?: SettingName[]): SettingsError {
@@ -98,8 +104,8 @@ export class Util {
    static async showErrorAboutSettings(hasSetUrl: boolean, hasSetToken: boolean): Promise<void> {
       if (hasSetUrl && hasSetToken) return;
       if (!hasSetUrl && !hasSetToken) {
-         window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません。');
-         //TODO: support multi step input.
+         const selected = await window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません。', '設定');
+         if (selected) commands.executeCommand('growi-client.setUrlAndToken');
          return;
       }
       if (hasSetToken) {

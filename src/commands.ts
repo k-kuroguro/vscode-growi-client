@@ -5,7 +5,8 @@ export function registerCommands(setting: Setting): Disposable[] {
    return [
       commands.registerCommand('growi-client.setApiToken', () => setApiToken(setting)),
       commands.registerCommand('growi-client.clearApiToken', () => clearApiToken(setting)),
-      commands.registerCommand('growi-client.setGrowiUrl', () => setGrowiUrl(setting))
+      commands.registerCommand('growi-client.setGrowiUrl', () => setGrowiUrl(setting)),
+      commands.registerCommand('growi-client.setUrlAndToken', () => setUrlAndToken(setting))
    ];
 }
 
@@ -36,4 +37,10 @@ async function setGrowiUrl(setting: Setting): Promise<boolean> {
    if (!url || url === '') return false;
    setting.growiUrl = url;
    return true;
+}
+
+async function setUrlAndToken(setting: Setting): Promise<void> {
+   //TODO: use multi step input
+   await setGrowiUrl(setting);
+   await setApiToken(setting);
 }

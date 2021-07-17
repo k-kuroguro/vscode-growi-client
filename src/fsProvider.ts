@@ -66,7 +66,6 @@ export class FsProvider implements FileSystemProvider {
       if (e instanceof ApiClientError) {
          throw e.message;
       } else if (e instanceof SettingsError) {
-         if (e.code === SettingsError.UndefinedSettings([]).code) ConfigUtil.showErrorAboutSettings(!e.hasError('Growi URL'), !e.hasError('Api Token'));
          throw e.message;
       }
       throw e;

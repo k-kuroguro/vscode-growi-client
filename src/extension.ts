@@ -5,8 +5,8 @@ import { ApiClient } from './apiClient';
 import { PageExplorer } from './pageExplorer';
 
 //TODO: ツリー, ページ内容のキャッシュ.
-//TODO: ViewWelcome
 //TODO: trashの中身も表示・編集できる.
+//TODO: 今はApi Tokenが必須になっているが, 必要ない処理もあるので要修正.
 
 export async function activate(context: vscode.ExtensionContext) {
    const setting = new Setting(context.globalState);

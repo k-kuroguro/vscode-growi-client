@@ -70,7 +70,6 @@ export class ApiClient {
       return false;
    }
 
-   //TODO: 今はApi Tokenが必須になっているが, 必要ない処理もあるので要修正.
    private getUrlAndToken(): [string, string] {
       const [growiUrl, apiToken] = [this.setting.growiUrl, this.setting.apiToken];
 

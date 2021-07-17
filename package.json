@@ -56,6 +56,18 @@
             }
          ]
       },
+      "viewsWelcome": [
+         {
+            "view": "growi-client.pageExplorer",
+            "contents": "GrowiのURLが未設定です.\n[Set Growi URL](command:growi-client.setGrowiUrl)",
+            "when": "!config.growi-client.growiUrl"
+         },
+         {
+            "view": "growi-client.pageExplorer",
+            "contents": "Api Tokenが未設定です.\n[Set Api Token](command:growi-client.setApiToken)",
+            "when": "!growi-client.apiTokenIsUndefined"
+         }
+      ],
       "menus": {
          "view/title": [
             {

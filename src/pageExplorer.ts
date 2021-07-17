@@ -37,10 +37,7 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
                vscode.window.showErrorMessage(e.message);
                return undefined;
             } else if (e instanceof SettingsError) {
-               if (e.code === SettingsError.UndefinedSettings().code) {
-                  ConfigUtil.showErrorAboutSettings(!e.hasError('Growi URL'), !e.hasError('Api Token'));
-                  return undefined;
-               }
+               if (e.code === SettingsError.UndefinedSettings().code) return undefined;
                else throw e;
             }
             throw e;
