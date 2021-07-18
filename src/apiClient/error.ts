@@ -16,8 +16,14 @@ export class ApiClientError extends BaseError {
       return new ApiClientError('無効なApi Tokenです.', this.name);
    }
 
-   static PageIsNotFound(path: string): ApiClientError {
-      return new ApiClientError(`${path} が見つかりません.`, this.name);
+   static PageExists(path?: string): ApiClientError {
+      if (path) return new ApiClientError(`${path} は既に存在します.`, this.name);
+      return new ApiClientError('ページは既に存在します.', this.name);
+   }
+
+   static PageIsNotFound(path?: string): ApiClientError {
+      if (path) return new ApiClientError(`${path} が見つかりません.`, this.name);
+      return new ApiClientError('ページが見つかりません.', this.name);
    }
 
    static PageHasMovedToTrash(path: string): ApiClientError {

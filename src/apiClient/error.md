@@ -48,3 +48,17 @@
 
  - `pages.get`した際, redirectToが`/trash/hoge`となっているか確認する.\
    (関数`ApiClient.getPage`内で確認)
+
+## 新規作成時に既にページが存在する (`/trash含む`) `PageExists`
+
+ - Request failed with status code 500
+
+   ```json
+   {
+      "errors": [
+         {
+            "code": "page_exists"
+         }
+      ]
+   }
+   ```

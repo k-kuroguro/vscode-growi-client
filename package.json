@@ -45,6 +45,11 @@
             "command": "growi-client.pageExplorer.editPageInBrowser",
             "category": "Growi Client",
             "title": "Edit In Browser"
+         },
+         {
+            "command": "growi-client.pageExplorer.createNewPage",
+            "category": "Growi Client",
+            "title": "New Page"
          }
       ],
       "views": {
@@ -88,14 +93,19 @@
          ],
          "view/item/context": [
             {
-               "command": "growi-client.pageExplorer.openPageInBrowser",
-               "when": "view == growi-client.pageExplorer && viewItem == growi-client.page",
+               "command": "growi-client.pageExplorer.createNewPage",
+               "when": "view == growi-client.pageExplorer",
                "group": "navigation@1"
             },
             {
-               "command": "growi-client.pageExplorer.editPageInBrowser",
-               "when": "view == growi-client.pageExplorer && viewItem == growi-client.page",
+               "command": "growi-client.pageExplorer.openPageInBrowser",
+               "when": "view == growi-client.pageExplorer",
                "group": "navigation@2"
+            },
+            {
+               "command": "growi-client.pageExplorer.editPageInBrowser",
+               "when": "view == growi-client.pageExplorer",
+               "group": "navigation@3"
             }
          ],
          "commandPalette": [

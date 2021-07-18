@@ -19,7 +19,7 @@ export class ApiClient {
       const [growiUrl, apiToken] = this.getUrlAndToken();
       const url = `${growiUrl}_api/pages.list?access_token=${apiToken}&path=${encodeURI(path ?? '/')}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
-      if (!response.data.ok) this.handleError(response.data.error || response.data);
+      if (!response.data.ok) this.handleError(response.data.error || response.data, path);
       return response.data.pages as PageList;
    }
 
@@ -33,7 +33,7 @@ export class ApiClient {
       const [growiUrl, apiToken] = this.getUrlAndToken();
       const url = `${growiUrl}_api/pages.get?access_token=${apiToken}&path=${encodeURI(path)}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
-      if (!response.data.ok) this.handleError(response.data.error || response.data);
+      if (!response.data.ok) this.handleError(response.data.error || response.data, path);
       if (response.data.page.redirectTo === `/trash${path}`) throw ApiClientError.PageHasMovedToTrash(path);
       return response.data.page as Page;
    }
@@ -55,7 +55,7 @@ export class ApiClient {
          revision_id: page.revision._id,
          body
       }).catch(e => this.handleError(e));
-      if (!response.data.ok) this.handleError(response.data.error || response.data);
+      if (!response.data.ok) this.handleError(response.data.error || response.data, path);
       return response.data.page as Page;
    }
 
@@ -65,9 +65,25 @@ export class ApiClient {
       const pagePaths = encodeURI(`["${path}"]`);
       const url = `${growiUrl}_api/pages.exist?access_token=${apiToken}&pagePaths=${pagePaths}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
-      if (!response.data.ok) this.handleError(response.data.error || response.data);
+      if (!response.data.ok) this.handleError(response.data.error || response.data, path);
       if (typeof response.data.pages[path] === 'boolean') return response.data.pages[path];
       return false;
+   }
+
+   async createPage(path: string, body: string): Promise<Page> {
+      const [growiUrl, apiToken] = this.getUrlAndToken();
+      const url = `${growiUrl}_api/v3/pages`;
+      const response = await axios.post(url, {
+         access_token: apiToken,
+         path,
+         body
+      }, {
+         validateStatus: (status: number): boolean => {
+            return (status >= 200 && status < 300) || status === 500; //page_exists等のエラー発生時, 500が返るため許可.
+         }
+      }).catch(e => this.handleError(e));
+      if (response.data.errors) this.handleError(response.data.errors[0].code || response.data.errors, path); //TODO: エラーを1つしか確認していない.
+      return { ...response.data.data.page, revision: response.data.data.revision } as Page;
    }
 
    private getUrlAndToken(): [string, string] {
@@ -81,13 +97,10 @@ export class ApiClient {
       throw SettingsError.UndefinedSettings(undefinedSettings);
    }
 
-   private handleError(e: any): never {
+   private handleError(e: any, path?: string): never {
       if (typeof e === 'string') {
-         let matchArray: RegExpMatchArray | null = [];
-         //HACK: 以下の正規表現にパフォーマンス上の問題あり.
-         if ((matchArray = e.match(/(?<=Error: Page ').*?(?=' is not found or forbidden)/g)) && matchArray.length) {
-            throw ApiClientError.PageIsNotFound(matchArray[0]);
-         }
+         if (e.match(/Error: Page '.*?' is not found or forbidden/g)) throw ApiClientError.PageIsNotFound(path);
+         if (e === 'page_exists') throw ApiClientError.PageExists(path);
          throw ApiClientError.Other(e);
       }
       if (axios.isAxiosError(e)) {

@@ -4,6 +4,21 @@ import { ApiClient, ApiClientError } from './apiClient';
 import { Setting, SettingsError, Util as ConfigUtil } from './setting';
 import { FsProvider } from './fsProvider';
 
+class Util {
+
+   static handleError(e: any): void {
+      if (e instanceof ApiClientError) {
+         vscode.window.showErrorMessage(e.message);
+         return;
+      } else if (e instanceof SettingsError) {
+         if (e.code === SettingsError.UndefinedSettings().code) return;
+         else throw e;
+      }
+      throw e;
+   }
+
+}
+
 class Page extends vscode.TreeItem {
 
    constructor(public title: string, public hasChildren: boolean, public isBlank: boolean, public fullPath: string) {
@@ -11,7 +26,6 @@ class Page extends vscode.TreeItem {
 
       this.command = isBlank ? undefined : { arguments: [fullPath], command: 'growi-client.pageExplorer.openPage', title: 'Open Page' };
       this.iconPath = isBlank ? new vscode.ThemeIcon('file') : new vscode.ThemeIcon('notebook');
-      this.contextValue = `growi-client.${isBlank ? 'blankPage' : 'page'}`;
       this.tooltip = fullPath;
    }
 
@@ -33,18 +47,9 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
    }
 
    async getChildren(element?: Page): Promise<Page[]> {
-      const response = await this.apiClient.getPages(element && element.fullPath !== '/' ? element.fullPath + '/' : undefined)
-         .catch(e => {
-            if (e instanceof ApiClientError) {
-               vscode.window.showErrorMessage(e.message);
-               return undefined;
-            } else if (e instanceof SettingsError) {
-               if (e.code === SettingsError.UndefinedSettings().code) return undefined;
-               else throw e;
-            }
-            throw e;
-         });
-
+      const response = await this.apiClient
+         .getPages(element && element.fullPath !== '/' ? element.fullPath + '/' : undefined)
+         .catch(e => Util.handleError(e));
       if (!response) return [];
 
       if (!element) {
@@ -100,7 +105,7 @@ export class PageExplorer {
    private readonly disposables: vscode.Disposable[] = [];
    private readonly scheme = 'growi';
 
-   constructor(private readonly setting: Setting, apiClient: ApiClient) {
+   constructor(private readonly setting: Setting, private readonly apiClient: ApiClient) {
       this.fsProvider = new FsProvider(apiClient);
       this.treeDataProvider = new TreeDataProvider(apiClient);
       this.treeView = vscode.window.createTreeView('growi-client.pageExplorer', { treeDataProvider: this.treeDataProvider, canSelectMany: false, showCollapseAll: true });
@@ -124,7 +129,8 @@ export class PageExplorer {
          vscode.commands.registerCommand('growi-client.pageExplorer.refresh', () => this.refresh()),
          vscode.commands.registerCommand('growi-client.pageExplorer.openPage', (path?: string) => path && this.openPage(path)),
          vscode.commands.registerCommand('growi-client.pageExplorer.openPageInBrowser', (page?: Page) => page && this.openPageInBrowser(page)),
-         vscode.commands.registerCommand('growi-client.pageExplorer.editPageInBrowser', (page?: Page) => page && this.editPageInBrowser(page))
+         vscode.commands.registerCommand('growi-client.pageExplorer.editPageInBrowser', (page?: Page) => page && this.editPageInBrowser(page)),
+         vscode.commands.registerCommand('growi-client.pageExplorer.createNewPage', (page?: Page) => this.createNewPage(page ? path.posix.join(page.fullPath, '/') : undefined))
       ];
    }
 
@@ -154,6 +160,30 @@ export class PageExplorer {
          return;
       }
       vscode.env.openExternal(vscode.Uri.parse(path.posix.join(growiUrl, page.fullPath) + '#edit'));
+   }
+
+   private async createNewPage(parentPath?: string): Promise<void> {
+      const input = await vscode.window.showInputBox({
+         value: parentPath ?? '/',
+         prompt: '作成するページのパスを入力してください。',
+         validateInput: (value: string): string => {
+            if (value === '') return 'パスを入力してください.';
+            if (value.match(/\/{2}/)) return '\'/\'は連続して使用できません.';
+            if (value.match(/[#%\$\?\+\^\*]/)) return '使用できない文字が含まれています.';
+            return '';
+         }
+      });
+      if (!input || input === '') return;
+      const normalizePath = (path: string): string => {
+         path = path.trim();
+         if (!path.startsWith('/')) path = '/' + path;
+         if (path.endsWith('/')) path = path.replace(/\/$/, '');
+         //TODO: ページの存在確認
+         return path;
+      };
+      const pagePath = normalizePath(input);
+      await this.apiClient.createPage(pagePath, `# ${path.basename(pagePath)}`).catch(e => Util.handleError(e));
+      this.refresh();
    }
 
    //#endregion
