@@ -1,7 +1,7 @@
 import { TextEncoder } from 'util';
 import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat as VsFileStat, FileSystemProvider, FileType, Uri, window } from 'vscode';
 import { ApiClient, ApiClientError } from './apiClient';
-import { SettingsError, Util as ConfigUtil } from './setting';
+import { SettingsError } from './setting';
 
 export class FsProvider implements FileSystemProvider {
 

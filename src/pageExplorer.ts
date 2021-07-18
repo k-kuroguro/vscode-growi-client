@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { ApiClient, ApiClientError } from './apiClient';
 import { Setting, SettingsError, Util as ConfigUtil } from './setting';
 import { FsProvider } from './fsProvider';
@@ -10,6 +11,7 @@ class Page extends vscode.TreeItem {
 
       this.command = isBlank ? undefined : { arguments: [fullPath], command: 'growi-client.pageExplorer.openPage', title: 'Open Page' };
       this.iconPath = isBlank ? new vscode.ThemeIcon('file') : new vscode.ThemeIcon('notebook');
+      this.contextValue = `growi-client.${isBlank ? 'blankPage' : 'page'}`;
       this.tooltip = fullPath;
    }
 
@@ -120,7 +122,9 @@ export class PageExplorer {
    registerCommands(): vscode.Disposable[] {
       return [
          vscode.commands.registerCommand('growi-client.pageExplorer.refresh', () => this.refresh()),
-         vscode.commands.registerCommand('growi-client.pageExplorer.openPage', (path?: string) => path && this.openPage(path))
+         vscode.commands.registerCommand('growi-client.pageExplorer.openPage', (path?: string) => path && this.openPage(path)),
+         vscode.commands.registerCommand('growi-client.pageExplorer.openPageInBrowser', (page?: Page) => page && this.openPageInBrowser(page)),
+         vscode.commands.registerCommand('growi-client.pageExplorer.editPageInBrowser', (page?: Page) => page && this.editPageInBrowser(page))
       ];
    }
 
@@ -132,6 +136,24 @@ export class PageExplorer {
       const uri = vscode.Uri.parse('growi:' + path + '.growi');
       const doc = await vscode.workspace.openTextDocument(uri);
       await vscode.window.showTextDocument(doc, { preview: false });
+   }
+
+   private openPageInBrowser(page: Page): void {
+      const growiUrl = this.setting.growiUrl;
+      if (!growiUrl) {
+         ConfigUtil.showErrorAboutSettings(false, true);
+         return;
+      }
+      vscode.env.openExternal(vscode.Uri.parse(path.posix.join(growiUrl, page.fullPath)));
+   }
+
+   private editPageInBrowser(page: Page): void {
+      const growiUrl = this.setting.growiUrl;
+      if (!growiUrl) {
+         ConfigUtil.showErrorAboutSettings(false, true);
+         return;
+      }
+      vscode.env.openExternal(vscode.Uri.parse(path.posix.join(growiUrl, page.fullPath) + '#edit'));
    }
 
    //#endregion

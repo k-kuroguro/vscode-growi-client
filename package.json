@@ -35,6 +35,16 @@
             "category": "Growi Client",
             "title": "Refresh Page Explorer",
             "icon": "$(extensions-refresh)"
+         },
+         {
+            "command": "growi-client.pageExplorer.openPageInBrowser",
+            "category": "Growi Client",
+            "title": "Open In Browser"
+         },
+         {
+            "command": "growi-client.pageExplorer.editPageInBrowser",
+            "category": "Growi Client",
+            "title": "Edit In Browser"
          }
       ],
       "views": {
@@ -74,6 +84,28 @@
                "command": "growi-client.pageExplorer.refresh",
                "when": "view == growi-client.pageExplorer",
                "group": "navigation"
+            }
+         ],
+         "view/item/context": [
+            {
+               "command": "growi-client.pageExplorer.openPageInBrowser",
+               "when": "view == growi-client.pageExplorer && viewItem == growi-client.page",
+               "group": "navigation@1"
+            },
+            {
+               "command": "growi-client.pageExplorer.editPageInBrowser",
+               "when": "view == growi-client.pageExplorer && viewItem == growi-client.page",
+               "group": "navigation@2"
+            }
+         ],
+         "commandPalette": [
+            {
+               "command": "growi-client.pageExplorer.openPageInBrowser",
+               "when": "false"
+            },
+            {
+               "command": "growi-client.pageExplorer.editPageInBrowser",
+               "when": "false"
             }
          ]
       },
