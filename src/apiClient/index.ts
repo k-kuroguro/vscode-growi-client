@@ -11,13 +11,16 @@ export class ApiClient {
 
    /**
     * パス配下のページ一覧を取得する.
-    * @param path 指定しない場合, ルート以下を取得する.
+    * @param path
+    * @param options
     * @throws {@link ApiClientError}
     * @throws {@link SettingsError}
     */
-   async getPages(path?: string): Promise<PageList> {
+   async getPages(path: string, options?: { limit?: number, offset?: number }): Promise<PageList> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
-      const url = `${growiUrl}_api/pages.list?access_token=${apiToken}&path=${encodeURI(path ?? '/')}`;
+      let url = `${growiUrl}_api/pages.list?access_token=${apiToken}&path=${encodeURI(path)}`;
+      if (options?.limit) url += `&limit=${options.limit}`;
+      if (options?.offset) url += `&offset=${options.offset}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
       if (!response.data.ok) this.handleError(response.data.error || response.data, path);
       return response.data.pages as PageList;

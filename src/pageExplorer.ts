@@ -48,7 +48,7 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
 
    async getChildren(element?: Page): Promise<Page[]> {
       const response = await this.apiClient
-         .getPages(element && element.fullPath !== '/' ? element.fullPath + '/' : undefined)
+         .getPages(element ? path.posix.join(element.fullPath, '/') : '/')
          .catch(e => Util.handleError(e));
       if (!response) return [];
 
