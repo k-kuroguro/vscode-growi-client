@@ -3,7 +3,12 @@ type PageBase = {
    path: string
 };
 
-export type PageList = PageBase[];
+export type PageList = {
+   pages: PageBase[],
+   totalCount: number,
+   limit: number,
+   offset: number
+};
 
 export type Page = PageBase & {
    revision: {

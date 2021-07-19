@@ -23,7 +23,12 @@ export class ApiClient {
       if (options?.offset) url += `&offset=${options.offset}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
       if (!response.data.ok) this.handleError(response.data.error || response.data, path);
-      return response.data.pages as PageList;
+      return {
+         pages: response.data.pages,
+         totalCount: response.data.totalCount,
+         limit: response.data.limit,
+         offset: response.data.offset
+      };
    }
 
    /**

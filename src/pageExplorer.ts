@@ -47,25 +47,16 @@ class TreeDataProvider implements vscode.TreeDataProvider<Page> {
    }
 
    async getChildren(element?: Page): Promise<Page[]> {
+      if (!element) return [new Page('root', true, false, '/')];
+
       const response = await this.apiClient
-         .getPages(element ? path.posix.join(element.fullPath, '/') : '/')
+         .getPages(path.posix.join(element.fullPath, '/'))
          .catch(e => Util.handleError(e));
       if (!response) return [];
 
-      if (!element) {
-         const title = 'root', fullPath = '/';
-         let isBlank: boolean = true, hasChildren: boolean = false;
-         for (const responsePage of response) {
-            if (responsePage.path.match(/^\/.*?\/.*/g)) hasChildren = true;
-            if (responsePage.path === '/') isBlank = false;
-            if (!isBlank && hasChildren) break;
-         }
-         return [new Page(title, hasChildren, isBlank, fullPath)];
-      }
-
       const pageMap: Map<string, { fullPath: string, hasChildren: boolean, isBlank: boolean }> = new Map();
 
-      for (const responsePage of response) {
+      for (const responsePage of response.pages) {
          if (responsePage.path === '/') continue;
 
          const path = (element.fullPath !== '/' ? responsePage.path.replace(element.fullPath, '') : responsePage.path).replace(/^\//, '');
