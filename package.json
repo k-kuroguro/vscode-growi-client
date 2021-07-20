@@ -59,6 +59,12 @@
                "name": "Page Explorer",
                "icon": "$(files)",
                "contextualTitle": "Page Explorer"
+            },
+            {
+               "id": "growi-client.aaa",
+               "name": "AAA",
+               "icon": "$(files)",
+               "contextualTitle": "Page Explorer"
             }
          ]
       },
