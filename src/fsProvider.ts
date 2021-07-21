@@ -30,6 +30,11 @@ export class FsProvider implements FileSystemProvider {
       throw new Error('FsProvider.createDirectory not implemented.');
    }
 
+   //TODO: readFIle writeFileではエラー処理を変える必要あり
+   //TODO: read時, ページが存在しなかったら空文字列を返す
+   //TODO: write時, create overwriteで処理を変える (createPage/updatePage)
+   //TODO: エラー処理を根本的に見直す
+
    async readFile(uri: Uri): Promise<Uint8Array> {
       const response = await this.apiClient
          .getPage(this.removeExt(uri.path))
