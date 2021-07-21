@@ -100,8 +100,8 @@ export class ApiClient {
       if (growiUrl && apiToken) return [growiUrl, apiToken];
 
       const undefinedSettings: SettingName[] = [];
-      if (!growiUrl) undefinedSettings.push('Growi URL');
-      if (!apiToken) undefinedSettings.push('Api Token');
+      if (!growiUrl) undefinedSettings.push('GrowiURL');
+      if (!apiToken) undefinedSettings.push('ApiToken');
       throw SettingsError.UndefinedSettings(undefinedSettings);
    }
 

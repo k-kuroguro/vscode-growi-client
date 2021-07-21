@@ -50,6 +50,11 @@
             "command": "growi-client.pageExplorer.createNewPage",
             "category": "Growi Client",
             "title": "New Page"
+         },
+         {
+            "command": "growi-client.pageExplorer.refreshChildren",
+            "category": "Growi Client",
+            "title": "Refresh Children"
          }
       ],
       "views": {
@@ -94,18 +99,23 @@
          "view/item/context": [
             {
                "command": "growi-client.pageExplorer.createNewPage",
-               "when": "view == growi-client.pageExplorer",
+               "when": "view == growi-client.pageExplorer && viewItem == Page",
                "group": "navigation@1"
             },
             {
                "command": "growi-client.pageExplorer.openPageInBrowser",
-               "when": "view == growi-client.pageExplorer",
+               "when": "view == growi-client.pageExplorer && viewItem == Page",
                "group": "navigation@2"
             },
             {
                "command": "growi-client.pageExplorer.editPageInBrowser",
-               "when": "view == growi-client.pageExplorer",
+               "when": "view == growi-client.pageExplorer && viewItem == Page",
                "group": "navigation@3"
+            },
+            {
+               "command": "growi-client.pageExplorer.refreshChildren",
+               "when": "view == growi-client.pageExplorer && viewItem == Page",
+               "group": "navigation@4"
             }
          ],
          "commandPalette": [
@@ -115,6 +125,14 @@
             },
             {
                "command": "growi-client.pageExplorer.editPageInBrowser",
+               "when": "false"
+            },
+            {
+               "command": "growi-client.pageExplorer.createNewPage",
+               "when": "false"
+            },
+            {
+               "command": "growi-client.pageExplorer.refreshChildren",
                "when": "false"
             }
          ]
@@ -134,6 +152,16 @@
             "growi-client.growiUrl": {
                "type": "string",
                "default": null
+            },
+            "growi-client.pageExplorer.rootPath": {
+               "type": "string",
+               "default": "/",
+               "description": "Page Explorerのルートパス"
+            },
+            "growi-client.pageExplorer.maxPagePerTime": {
+               "type": "number",
+               "default": 10,
+               "description": "Page Explorerにて, 一度の読み込みで表示する最大のページ数"
             }
          }
       }

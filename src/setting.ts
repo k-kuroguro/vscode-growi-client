@@ -1,8 +1,9 @@
+import * as path from 'path';
 import { commands, window, workspace, ConfigurationTarget, Memento, EventEmitter, Event, Disposable } from 'vscode';
 import { BaseError } from './error';
 
-type ConfigName = 'Growi URL';
-type StateName = 'Api Token';
+type ConfigName = 'GrowiURL' | 'RootPath' | 'MaxPagePerTime';
+type StateName = 'ApiToken';
 export type SettingName = ConfigName | StateName;
 
 type GlobalState = Memento & { setKeysForSync(keys: readonly string[]): void };
@@ -18,7 +19,9 @@ export class Setting {
       state.setKeysForSync(['apiToken']);
       this.disposables.push(
          workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('growi-client.growiUrl')) this._onDidChange.fire('Growi URL');
+            if (e.affectsConfiguration('growi-client.growiUrl')) this._onDidChange.fire('GrowiURL');
+            if (e.affectsConfiguration('growi-client.pageExplorer.rootPath')) this._onDidChange.fire('RootPath');
+            if (e.affectsConfiguration('growi-client.pageExplorer.maxPagePerTime')) this._onDidChange.fire('MaxPagePerTime');
          })
       );
       this.apiTokenIsUndefined = !!this.apiToken;
@@ -38,8 +41,8 @@ export class Setting {
    set apiToken(token: string | undefined) {
       if (token) token = encodeURI(token.trim());
       this.state.update('apiToken', token);
-      this._onDidChange.fire('Api Token');
-      this.apiTokenIsUndefined = !!token;
+      this._onDidChange.fire('ApiToken');
+      this.apiTokenIsUndefined = !token;
    }
 
    get apiToken(): string | undefined {
@@ -69,7 +72,33 @@ export class Setting {
          url = encodeURI(url);
       }
       workspace.getConfiguration('growi-client').update('growiUrl', url, ConfigurationTarget.Global);
-      this._onDidChange.fire('Growi URL');
+      this._onDidChange.fire('GrowiURL');
+   }
+
+   //TODO: package.jsonにpattern追加
+   get rootPath(): string {
+      return workspace.getConfiguration('growi-client').get<string>('pageExplorer.rootPath') || '/';
+   }
+
+   set rootPath(rootPath: string | undefined) {
+      if (rootPath === '') rootPath = undefined;
+      if (rootPath) {
+         //TODO: パスの正規化などをクラスに切り出す
+         rootPath = path.normalize(rootPath.trim());
+         if (!rootPath.startsWith('/')) rootPath = '/' + rootPath;
+         if (rootPath.endsWith('/')) rootPath = rootPath.replace(/\/$/, '');
+      }
+      workspace.getConfiguration('growi-client').update('pageExplorer.rootPath', rootPath, ConfigurationTarget.Global);
+      this._onDidChange.fire('RootPath');
+   }
+
+   get maxPagePerTime(): number {
+      return workspace.getConfiguration('growi-client').get<number>('pageExplorer.maxPagePerTime') || 10;
+   }
+
+   set maxPagePerTime(number: number | undefined) {
+      workspace.getConfiguration('growi-client').update('pageExplorer.maxPagePerTime', number, ConfigurationTarget.Global);
+      this._onDidChange.fire('MaxPagePerTime');
    }
 
    //#endregion
