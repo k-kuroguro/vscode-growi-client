@@ -104,17 +104,17 @@ export class Util {
    static async showErrorAboutSettings(hasSetUrl: boolean, hasSetToken: boolean): Promise<void> {
       if (hasSetUrl && hasSetToken) return;
       if (!hasSetUrl && !hasSetToken) {
-         const selected = await window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません。', '設定');
+         const selected = await window.showErrorMessage('GrowiのURL, Api Tokenが設定されていません.', '設定');
          if (selected) commands.executeCommand('growi-client.setUrlAndToken');
          return;
       }
       if (hasSetToken) {
-         const selected = await window.showErrorMessage('GrowiのURLが設定されていません。', '設定');
+         const selected = await window.showErrorMessage('GrowiのURLが設定されていません.', '設定');
          if (selected) commands.executeCommand('growi-client.setGrowiUrl');
          return;
       }
       if (hasSetUrl) {
-         const selected = await window.showErrorMessage('Api Tokenが設定されていません。', '設定');
+         const selected = await window.showErrorMessage('Api Tokenが設定されていません.', '設定');
          if (selected) commands.executeCommand('growi-client.setApiToken');
          return;
       }

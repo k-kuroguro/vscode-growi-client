@@ -156,7 +156,7 @@ export class PageExplorer {
    private async createNewPage(parentPath?: string): Promise<void> {
       const input = await vscode.window.showInputBox({
          value: parentPath ?? '/',
-         prompt: '作成するページのパスを入力してください。',
+         prompt: '作成するページのパスを入力してください.',
          validateInput: (value: string): string => {
             if (value === '') return 'パスを入力してください.';
             if (value.match(/\/{2}/)) return '\'/\'は連続して使用できません.';

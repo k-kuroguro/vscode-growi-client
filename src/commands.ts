@@ -13,9 +13,9 @@ export function registerCommands(setting: Setting): Disposable[] {
 async function setApiToken(setting: Setting): Promise<boolean> {
    const token = await window.showInputBox({
       value: '',
-      prompt: 'api tokenを入力してください。',
+      prompt: 'Api Tokenを入力してください.',
       validateInput: (value: string) => {
-         if (value.includes(' ')) return 'api tokenはスペースを含みません。';
+         if (value.includes(' ')) return 'Api Tokenはスペースを含みません.';
          return '';
       }
    });
@@ -31,7 +31,7 @@ function clearApiToken(setting: Setting): void {
 async function setGrowiUrl(setting: Setting): Promise<boolean> {
    const url = await window.showInputBox({
       value: setting.growiUrl ?? '',
-      prompt: 'GrowiのURLを入力してください。',
+      prompt: 'GrowiのURLを入力してください.',
       placeHolder: 'https://demo.growi.org/'
    });
    if (!url || url === '') return false;
