@@ -85,7 +85,7 @@
          {
             "view": "growi-client.pageExplorer",
             "contents": "Api Tokenが未設定です.\n[Set Api Token](command:growi-client.setApiToken)",
-            "when": "!growi-client.apiTokenIsUndefined"
+            "when": "growi-client.apiTokenIsUndefined"
          }
       ],
       "menus": {

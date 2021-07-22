@@ -24,7 +24,7 @@ export class Setting {
             if (e.affectsConfiguration('growi-client.pageExplorer.maxPagePerTime')) this._onDidChange.fire('MaxPagePerTime');
          })
       );
-      this.apiTokenIsUndefined = !!this.apiToken;
+      this.apiTokenIsUndefined = !this.apiToken;
    }
 
    dispose(): void {
