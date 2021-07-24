@@ -13,8 +13,11 @@ export class ApiClient {
     * パス配下のページ一覧を取得する.
     * @param path
     * @param options
-    * @throws {@link ApiClientError}
-    * @throws {@link SettingsError}
+    * @throws {@link ApiClientError}<br>
+    *    - GrowiUrlIsInvalid
+    *    - ApiTokenIsInvalid
+    * @throws {@link SettingsError}<br>
+    *    - UndefinedSettings
     */
    async getPages(path: string, options?: { limit?: number, offset?: number }): Promise<PageList> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
@@ -34,8 +37,13 @@ export class ApiClient {
    /**
     * 指定パスのページを取得する.
     * @param path '/'で始まるが, 末尾にはつかない. e.g.'/a/b/c'
-    * @throws {@link ApiClientError}
-    * @throws {@link SettingsError}
+    * @throws {@link ApiClientError}<br>
+    *    - GrowiUrlIsInvalid
+    *    - ApiTokenIsInvalid
+    *    - PageHasMovedToTrash
+    *    - PageIsNotFound
+    * @throws {@link SettingsError}<br>
+    *    - UndefinedSettings
     */
    async getPage(path: string): Promise<Page> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
@@ -50,8 +58,13 @@ export class ApiClient {
     * ページの本文を更新する
     * @param path '/'で始まるが, 末尾にはつかない. e.g.'/a/b/c'
     * @param body
-    * @throws {@link ApiClientError}
-    * @throws {@link SettingsError}
+    * @throws {@link ApiClientError}<br>
+    *    - GrowiUrlIsInvalid
+    *    - ApiTokenIsInvalid
+    *    - PageHasMovedToTrash
+    *    - PageIsNotFound
+    * @throws {@link SettingsError}<br>
+    *    - UndefinedSettings
     */
    async updatePage(path: string, body: string): Promise<Page> {
       const page = await this.getPage(path).catch(e => { throw e; });
@@ -68,6 +81,15 @@ export class ApiClient {
    }
 
    //TODO: 引数に文字列の配列を許可.
+   /**
+    * ページの存在を確認する
+    * @param path '/'で始まるが, 末尾にはつかない. e.g.'/a/b/c'
+    * @throws {@link ApiClientError}<br>
+    *    - GrowiUrlIsInvalid
+    *    - ApiTokenIsInvalid
+    * @throws {@link SettingsError}<br>
+    *    - UndefinedSettings
+    */
    async pageExists(path: string): Promise<boolean> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
       const pagePaths = encodeURI(`["${path}"]`);
@@ -78,6 +100,17 @@ export class ApiClient {
       return false;
    }
 
+   /**
+    * ページを新規作成する
+    * @param path '/'で始まるが, 末尾にはつかない. e.g.'/a/b/c'
+    * @param body
+    * @throws {@link ApiClientError}<br>
+    *    - GrowiUrlIsInvalid
+    *    - ApiTokenIsInvalid
+    *    - PageExists
+    * @throws {@link SettingsError}<br>
+    *    - UndefinedSettings
+    */
    async createPage(path: string, body: string): Promise<Page> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
       const url = `${growiUrl}_api/v3/pages`;
