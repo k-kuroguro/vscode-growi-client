@@ -306,10 +306,11 @@ export class PageExplorer {
          value: initialPath,
          prompt: '作成するページのパスを入力してください.',
          valueSelection: [initialPath.length, initialPath.length],
-         validateInput: (value: string): string => {
+         validateInput: async (value: string): Promise<string> => {
             if (value === '') return 'パスを入力してください.';
             if (value.match(/\/{2}/)) return '\'/\'は連続して使用できません.';
             if (value.match(/[#%\$\?\+\^\*]/)) return '使用できない文字が含まれています.';
+            if (await this.apiClient.pageExists(value)) return `${value} は既に存在します.`;
             return '';
          }
       });
@@ -318,12 +319,13 @@ export class PageExplorer {
          path = path.trim();
          if (!path.startsWith('/')) path = '/' + path;
          if (path.endsWith('/')) path = path.replace(/\/$/, '');
-         //TODO: ページの存在確認
          return path;
       };
       const pagePath = normalizePath(input);
-      await this.apiClient.createPage(pagePath, `# ${path.basename(pagePath)}`).catch(e => Util.handleError(e));
-      this.refresh(parentPath);
+      if (await this.apiClient.createPage(pagePath, `# ${path.basename(pagePath)}`).catch(e => Util.handleError(e))) {
+         this.openPage(pagePath);
+         this.refresh(parentPath);
+      }
    }
 
    //#endregion
