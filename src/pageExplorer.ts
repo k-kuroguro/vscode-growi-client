@@ -244,7 +244,7 @@ export class PageExplorer {
             //TODO: 部分更新
             this.treeDataProvider.refresh();
          }),
-         vscode.workspace.registerFileSystemProvider(this.scheme, this.fsProvider, { isCaseSensitive: true }),
+         vscode.workspace.registerFileSystemProvider(this.scheme, this.fsProvider, { isCaseSensitive: true }), //HACK: PageExplorerの仕事ではない
          ...this.registerCommands()
       );
    }

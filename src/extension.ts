@@ -7,6 +7,7 @@ import { PageExplorer } from './pageExplorer';
 //TODO: ツリー, ページ内容のキャッシュ.
 //TODO: trashの中身も表示・編集できる.
 //TODO: 今はApi Tokenが必須になっているが, 必要ない処理もあるので要修正.
+//TODO: ページ新規作成時にbody入力用エディタを開く
 
 export async function activate(context: vscode.ExtensionContext) {
    const setting = new Setting(context.globalState);
