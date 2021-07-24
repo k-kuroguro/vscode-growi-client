@@ -48,10 +48,6 @@
          "warn",
          "single"
       ],
-      "spaced-comment": [
-         "warn",
-         "never"
-      ],
       "semi": "off"
    },
    "ignorePatterns": [
