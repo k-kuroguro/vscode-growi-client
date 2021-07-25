@@ -229,12 +229,9 @@ export class PageExplorer {
 
    private readonly treeView: vscode.TreeView<TreeItem>;
    private readonly treeDataProvider: TreeDataProvider;
-   private readonly fsProvider: FsProvider;
    private readonly disposables: vscode.Disposable[] = [];
-   private readonly scheme = 'growi';
 
    constructor(private readonly setting: Setting, private readonly apiClient: ApiClient) {
-      this.fsProvider = new FsProvider(apiClient);
       this.treeDataProvider = new TreeDataProvider(setting, apiClient);
       this.treeView = vscode.window.createTreeView('growi-client.pageExplorer', { treeDataProvider: this.treeDataProvider, canSelectMany: false, showCollapseAll: true });
 
@@ -244,7 +241,6 @@ export class PageExplorer {
             //TODO: 部分更新
             this.treeDataProvider.refresh();
          }),
-         vscode.workspace.registerFileSystemProvider(this.scheme, this.fsProvider, { isCaseSensitive: true }), //HACK: PageExplorerの仕事ではない
          ...this.registerCommands()
       );
    }
