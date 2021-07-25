@@ -297,7 +297,7 @@ export class PageExplorer {
    }
 
    private async createNewPage(parentPath?: string): Promise<void> {
-      const initialPath = parentPath ? path.posix.join(parentPath, '/') : this.setting.rootPath;
+      const initialPath = path.posix.join(parentPath ?? this.setting.rootPath, '/');
       const input = await vscode.window.showInputBox({
          value: initialPath,
          prompt: '作成するページのパスを入力してください.',
