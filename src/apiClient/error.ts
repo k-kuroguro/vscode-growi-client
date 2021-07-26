@@ -30,6 +30,10 @@ export class ApiClientError extends BaseError {
       return new ApiClientError(`${path} は /trash${path} に移動しました.`, 'PageHasMovedToTrash');
    }
 
+   static ContentIsEmpty(): ApiClientError {
+      return new ApiClientError('ページの内容が入力されていません.', 'ContentIsEmpty');
+   }
+
    static Other(message: string): ApiClientError {
       return new ApiClientError(message, 'Other');
    }

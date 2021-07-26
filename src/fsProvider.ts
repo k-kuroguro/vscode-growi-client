@@ -42,15 +42,18 @@ export class FsProvider implements FileSystemProvider {
       return this.toUint8Array(response.revision.body);
    }
 
+   //エラーメッセージ表示の仕様上, 文字列をthrowする.
    async writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean; }): Promise<void> {
       const pagePath = this.removeExt(uri.path);
       if (await this.apiClient.pageExists(pagePath)) {
-         if (!options.overwrite) throw ApiClientError.PageExists(pagePath);
+         if (!options.overwrite) throw ApiClientError.PageExists(pagePath).message;
+         if (content.toString() === '') throw ApiClientError.ContentIsEmpty().message;
          await this.apiClient
             .updatePage(pagePath, content.toString())
             .catch(e => this.handleError(e));
       } else {
-         if (!options.create) throw ApiClientError.PageIsNotFound(pagePath);
+         if (!options.create) throw ApiClientError.PageIsNotFound(pagePath).message;
+         if (content.toString() === '') throw ApiClientError.ContentIsEmpty().message;
          await this.apiClient
             .createPage(pagePath, content.toString())
             .catch(e => this.handleError(e));
