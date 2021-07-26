@@ -9,29 +9,29 @@ export class ApiClientError extends BaseError {
    }
 
    static GrowiUrlIsInvalid(): ApiClientError {
-      return new ApiClientError('無効なGrowi Urlです.', this.name);
+      return new ApiClientError('無効なGrowi Urlです.', 'GrowiUrlIsInvalid');
    }
 
    static ApiTokenIsInvalid(): ApiClientError {
-      return new ApiClientError('無効なApi Tokenです.', this.name);
+      return new ApiClientError('無効なApi Tokenです.', 'ApiTokenIsInvalid');
    }
 
    static PageExists(path?: string): ApiClientError {
-      if (path) return new ApiClientError(`${path} は既に存在します.`, this.name);
-      return new ApiClientError('ページは既に存在します.', this.name);
+      if (path) return new ApiClientError(`${path} は既に存在します.`, 'PageExists');
+      return new ApiClientError('ページは既に存在します.', 'PageExists');
    }
 
    static PageIsNotFound(path?: string): ApiClientError {
-      if (path) return new ApiClientError(`${path} が見つかりません.`, this.name);
-      return new ApiClientError('ページが見つかりません.', this.name);
+      if (path) return new ApiClientError(`${path} が見つかりません.`, 'PageIsNotFound');
+      return new ApiClientError('ページが見つかりません.', 'PageIsNotFound');
    }
 
    static PageHasMovedToTrash(path: string): ApiClientError {
-      return new ApiClientError(`${path} は /trash${path} に移動しました.`, this.name);
+      return new ApiClientError(`${path} は /trash${path} に移動しました.`, 'PageHasMovedToTrash');
    }
 
    static Other(message: string): ApiClientError {
-      return new ApiClientError(message, this.name);
+      return new ApiClientError(message, 'Other');
    }
 
 }

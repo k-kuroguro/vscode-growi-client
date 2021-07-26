@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { ApiClient, ApiClientError } from './apiClient';
 import { Setting, SettingsError, Util as ConfigUtil } from './setting';
-import { FsProvider } from './fsProvider';
 
 type TreeItem = Page | Button;
 type TreeItemMap = Map<string /* path */, TreeItem>;
@@ -270,7 +269,15 @@ export class PageExplorer {
 
    private async openPage(path: string): Promise<void> {
       const uri = vscode.Uri.parse('growi:' + path + '.growi');
-      const doc = await vscode.workspace.openTextDocument(uri);
+      const doc = await (async () => {
+         try {
+            return await vscode.workspace.openTextDocument(uri);
+         } catch (e) {
+            vscode.window.showErrorMessage(e.message || e);
+            return undefined;
+         }
+      })();
+      if (!doc) return;
       await vscode.window.showTextDocument(doc, { preview: false });
    }
 

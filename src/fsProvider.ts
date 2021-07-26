@@ -30,22 +30,31 @@ export class FsProvider implements FileSystemProvider {
       throw new Error('FsProvider.createDirectory not implemented.');
    }
 
-   //TODO: readFIle writeFileではエラー処理を変える必要あり
-   //TODO: read時, ページが存在しなかったら空文字列を返す
-   //TODO: write時, create overwriteで処理を変える (createPage/updatePage)
-   //TODO: エラー処理を根本的に見直す
-
+   //TODO: 新規作成時にメッセージ
    async readFile(uri: Uri): Promise<Uint8Array> {
       const response = await this.apiClient
          .getPage(this.removeExt(uri.path))
-         .catch(e => this.handleError(e));
+         .catch(e => {
+            if (e.code === ApiClientError.PageIsNotFound().code) return;
+            this.handleError(e);
+         });
+      if (!response) return this.toUint8Array(''); //存在しない場合空文字列を返す
       return this.toUint8Array(response.revision.body);
    }
 
    async writeFile(uri: Uri, content: Uint8Array, options: { create: boolean; overwrite: boolean; }): Promise<void> {
-      await this.apiClient
-         .updatePage(this.removeExt(uri.path), content.toString())
-         .catch(e => this.handleError(e));
+      const pagePath = this.removeExt(uri.path);
+      if (await this.apiClient.pageExists(pagePath)) {
+         if (!options.overwrite) throw ApiClientError.PageExists(pagePath);
+         await this.apiClient
+            .updatePage(pagePath, content.toString())
+            .catch(e => this.handleError(e));
+      } else {
+         if (!options.create) throw ApiClientError.PageIsNotFound(pagePath);
+         await this.apiClient
+            .createPage(pagePath, content.toString())
+            .catch(e => this.handleError(e));
+      }
    }
 
    delete(uri: Uri, options: { recursive: boolean; }): void | Thenable<void> {

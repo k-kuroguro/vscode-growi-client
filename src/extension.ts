@@ -9,6 +9,8 @@ import { FsProvider } from './fsProvider';
 //TODO: trashの中身も表示・編集できる.
 //TODO: 今はApi Tokenが必須になっているが, 必要ない処理もあるので要修正.
 //TODO: ページ新規作成時にbody入力用エディタを開く
+//TODO: コマンドパレットから利用可能なnew page, open pageコマンド
+//TODO: コンテキストメニュー整理
 
 export async function activate(context: ExtensionContext) {
    const setting = new Setting(context.globalState);
