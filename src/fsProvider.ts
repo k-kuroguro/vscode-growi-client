@@ -78,11 +78,13 @@ export class FsProvider implements FileSystemProvider {
       return path.replace(/.growi$/g, '');
    }
 
-   //TODO: エラー発生時, ツリービューを更新する. (onDidChangeFileを発火させる)
+   //TODO: イベント発火の細分化
    private handleError(e: any): never {
       if (e instanceof ApiClientError) {
+         this._onDidChangeFile.fire([]);
          throw e.message;
       } else if (e instanceof SettingsError) {
+         this._onDidChangeFile.fire([]);
          throw e.message;
       }
       throw e;

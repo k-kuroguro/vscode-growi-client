@@ -116,8 +116,6 @@ class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
       Util.showProgress(this.loadChildren(path));
    }
 
-   //TODO: 空のページを開いたときの動作(今は開かない)
-
    getTreeItem(element: TreeItem): TreeItem {
       return element;
    }
@@ -263,7 +261,7 @@ export class PageExplorer {
       ];
    }
 
-   private refresh(path?: string): void {
+   refresh(path?: string): void {
       this.treeDataProvider.refresh(path, { hard: true });
    }
 

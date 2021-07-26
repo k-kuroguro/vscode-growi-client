@@ -16,11 +16,16 @@ export async function activate(context: ExtensionContext) {
    const setting = new Setting(context.globalState);
    const apiClient = new ApiClient(setting);
    const fsProvider = new FsProvider(apiClient);
+   const pageExplorer = new PageExplorer(setting, apiClient);
 
    context.subscriptions.push(
       setting,
+      pageExplorer,
+      fsProvider.onDidChangeFile(e => {
+         //TODO: 部分更新
+         pageExplorer.refresh();
+      }),
       workspace.registerFileSystemProvider('growi', fsProvider, { isCaseSensitive: true, isReadonly: false }),
-      new PageExplorer(setting, apiClient),
       ...registerCommands(setting)
    );
 
