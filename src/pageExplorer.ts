@@ -3,6 +3,8 @@ import * as path from 'path';
 import { ApiClient, ApiClientError } from './apiClient';
 import { Setting, SettingsError, Util as ConfigUtil } from './setting';
 
+//HACK: 大きくなりすぎているので切り分ける
+
 type TreeItem = Page | Button;
 type TreeItemMap = Map<string /* path */, TreeItem>;
 type ButtonType = 'CreatePage' | 'LoadNextPages';
