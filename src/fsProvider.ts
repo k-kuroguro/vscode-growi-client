@@ -59,6 +59,8 @@ export class FsProvider implements FileSystemProvider {
             .createPage(pagePath, content.toString())
             .catch(e => this.handleError(e));
       }
+      //TODO: イベント指定する
+      this._onDidChangeFile.fire([]);
    }
 
    delete(uri: Uri, options: { recursive: boolean; }): void | Thenable<void> {
