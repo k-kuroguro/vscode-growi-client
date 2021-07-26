@@ -250,6 +250,8 @@ export class PageExplorer {
 
    registerCommands(): vscode.Disposable[] {
       return [
+         vscode.commands.registerCommand('growi-client.createNewPage', () => this.createNewPage()),
+         vscode.commands.registerCommand('growi-client.openPage', () => this.openPage()),
          vscode.commands.registerCommand('growi-client.pageExplorer.refresh', () => this.refresh()),
          vscode.commands.registerCommand('growi-client.pageExplorer.openPage', (path?: string) => path && this.openPage(path)),
          vscode.commands.registerCommand('growi-client.pageExplorer.loadNextPages', (path?: string) => path && this.loadNextPages(path)),
@@ -265,8 +267,24 @@ export class PageExplorer {
       this.treeDataProvider.refresh(path, { hard: true });
    }
 
-   private async openPage(path: string): Promise<void> {
-      const uri = vscode.Uri.parse('growi:' + path + '.growi');
+   private async openPage(path?: string): Promise<void> {
+      const uri = await (async () => {
+         if (!path) {
+            path = await vscode.window.showInputBox({
+               value: this.setting.rootPath,
+               prompt: '開くページのパスを入力してください.',
+               valueSelection: [this.setting.rootPath.length, this.setting.rootPath.length],
+               validateInput: async (value: string): Promise<string> => {
+                  if (value === '') return 'パスを入力してください.';
+                  if (!(await this.apiClient.pageExists(value))) return `${value} は存在しません.`;
+                  return '';
+               }
+            });
+            if (!path || path === '') return;
+         }
+         return vscode.Uri.parse('growi:' + path + '.growi');
+      })();
+      if (!uri) return;
       const doc = await (async () => {
          try {
             return await vscode.workspace.openTextDocument(uri);

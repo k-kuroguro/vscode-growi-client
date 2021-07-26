@@ -3,6 +3,7 @@ import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat as VsFileSta
 import { ApiClient, ApiClientError } from './apiClient';
 import { SettingsError } from './setting';
 
+//TODO: writeFile/delete/rename時にonDidChange発火
 export class FsProvider implements FileSystemProvider {
 
    private _onDidChangeFile: EventEmitter<FileChangeEvent[]> = new EventEmitter();
