@@ -323,10 +323,7 @@ export class PageExplorer {
          return path;
       };
       const pagePath = normalizePath(input);
-      if (await this.apiClient.createPage(pagePath, `# ${path.basename(pagePath)}`).catch(e => Util.handleError(e))) {
-         this.openPage(pagePath);
-         this.refresh(parentPath);
-      }
+      this.openPage(pagePath);
    }
 
    //#endregion
