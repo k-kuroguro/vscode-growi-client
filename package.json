@@ -163,6 +163,11 @@
                "type": "string",
                "default": null
             },
+            "growi-client.useLsxPlugin": {
+               "type": "boolean",
+               "default": false,
+               "description": "`growi-plugin-lsx`プラグインを使用するか.\n使用すると, ソート/フィルタ機能が使用可能になります."
+            },
             "growi-client.pageExplorer.rootPath": {
                "type": "string",
                "default": "/",

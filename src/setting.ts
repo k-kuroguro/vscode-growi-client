@@ -2,7 +2,7 @@ import * as path from 'path';
 import { commands, window, workspace, ConfigurationTarget, Memento, EventEmitter, Event, Disposable } from 'vscode';
 import { BaseError } from './error';
 
-type ConfigName = 'GrowiURL' | 'RootPath' | 'MaxPagePerTime';
+type ConfigName = 'GrowiURL' | 'RootPath' | 'MaxPagePerTime' | 'UseLsxPlugin';
 type StateName = 'ApiToken';
 export type SettingName = ConfigName | StateName;
 
@@ -20,6 +20,7 @@ export class Setting {
       this.disposables.push(
          workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('growi-client.growiUrl')) this._onDidChange.fire('GrowiURL');
+            if (e.affectsConfiguration('growi-client.useLsxPlugin')) this._onDidChange.fire('UseLsxPlugin');
             if (e.affectsConfiguration('growi-client.pageExplorer.rootPath')) this._onDidChange.fire('RootPath');
             if (e.affectsConfiguration('growi-client.pageExplorer.maxPagePerTime')) this._onDidChange.fire('MaxPagePerTime');
          })
@@ -73,6 +74,15 @@ export class Setting {
       }
       workspace.getConfiguration('growi-client').update('growiUrl', url, ConfigurationTarget.Global);
       this._onDidChange.fire('GrowiURL');
+   }
+
+   get useLsxPlugin(): boolean {
+      return workspace.getConfiguration('growi-client').get<boolean>('useLsxPlugin') ?? false;
+   }
+
+   set useLsxPlugin(usePlugin: boolean | undefined) {
+      workspace.getConfiguration('growi-client').update('useLsxPlugin', usePlugin, ConfigurationTarget.Global);
+      this._onDidChange.fire('UseLsxPlugin');
    }
 
    //TODO: package.jsonにpattern追加
