@@ -206,7 +206,7 @@ class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
          if (exceedMaxPagePerTime(++pageCount)) break;
       }
 
-      const hasNextPages = response.pages.length === this.limit;
+      const hasNextPages = response.pages.length === this.limit || response.pages.length > maxPagePerTime;
       parentPage.nextOffset = i + parentPage.nextOffset;
       for (const [title, child] of children.entries()) {
          parentPage.children.set(title, child);
