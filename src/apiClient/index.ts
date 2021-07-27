@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Setting, SettingsError, SettingName } from '../setting';
 import { ApiClientError } from './error';
-import { Page, PageList } from './types';
+import { Page, PageList, Sort } from './types';
 
 export { ApiClientError } from './error';
 
@@ -11,7 +11,7 @@ export class ApiClient {
 
    /**
     * パス配下のページ一覧を取得する.
-    * @param path
+    * @param path 末尾に`/`をつけること
     * @param options
     * @throws {@link ApiClientError}<br>
     *    - GrowiUrlIsInvalid
@@ -31,6 +31,54 @@ export class ApiClient {
          totalCount: response.data.totalCount,
          limit: response.data.limit,
          offset: response.data.offset
+      };
+   }
+
+   /**
+    * lsxプラグインを使用して, パス配下のページ一覧を取得する.
+    * @param path 末尾に`/`をつけること
+    * @param options
+    * @throws {@link ApiClientError}<br>
+    *    - GrowiUrlIsInvalid
+    *    - ApiTokenIsInvalid
+    * @throws {@link SettingsError}<br>
+    *    - UndefinedSettings
+    */
+   async getPagesByLsx(path: string, options?: {
+      limit?: number,
+      offset?: number,
+      sort?: Sort,
+      reverse?: boolean,
+      filter?: string
+   }): Promise<PageList> {
+      const [growiUrl, apiToken] = this.getUrlAndToken();
+      const encodedPath = encodeURI(path);
+      const defaultLimit = 50;
+      let url = `${growiUrl}_api/plugins/lsx?access_token=${apiToken}&pagePath=${encodedPath}`;
+      let optionsQuery: {
+         num: string,
+         sort: Sort,
+         reverse: 'true' | 'false',
+         filter?: string
+      } = { num: defaultLimit.toString(), sort: 'path', reverse: 'false' };
+      if (options?.limit || options?.offset) {
+         let num = defaultLimit.toString();
+         if (options.limit && typeof options.offset === 'undefined') num = `${options.limit}`;
+         if (options.offset && typeof options.limit === 'undefined') num = `${(options.offset + 1)}:${options.offset + defaultLimit}`;
+         if (typeof options.offset !== 'undefined' && typeof options.limit !== 'undefined') num = `${options.offset + 1}:${options.offset + options.limit}`;
+         optionsQuery.num = num;
+      }
+      if (options?.sort) optionsQuery.sort = options.sort;
+      if (options?.reverse) optionsQuery.reverse = options.reverse ? 'true' : 'false';
+      if (options?.filter) optionsQuery.filter = options.filter;
+      url += '&options=' + encodeURI(JSON.stringify({ ...optionsQuery, [encodedPath.replace(/\/$/, '')]: true }));
+      const response = await axios.get(url).catch(e => this.handleError(e));
+      if (!response.data.ok) this.handleError(response.data.error || response.data, path);
+      return {
+         pages: response.data.pages,
+         totalCount: (await this.getPages(path, { limit: 0 })).totalCount,
+         limit: options?.limit || defaultLimit,
+         offset: options?.offset || 0
       };
    }
 

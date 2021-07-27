@@ -171,12 +171,12 @@
             "growi-client.pageExplorer.rootPath": {
                "type": "string",
                "default": "/",
-               "description": "Page Explorerのルートパス"
+               "description": "Page Explorerのルートパス."
             },
             "growi-client.pageExplorer.maxPagePerTime": {
                "type": "number",
                "default": 10,
-               "description": "Page Explorerにて, 一度の読み込みで表示する最大のページ数"
+               "description": "Page Explorerにて, 一度の読み込みで表示する最大のページ数."
             }
          }
       }

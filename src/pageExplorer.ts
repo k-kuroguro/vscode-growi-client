@@ -155,9 +155,16 @@ class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
       this.itemMap.set(parentPath, parentPage);
       this.refresh(parentPath);
 
-      const response = await this.apiClient
-         .getPages(path.posix.join(parentPage.fullPath, '/'), { limit: this.limit, offset: parentPage.nextOffset })
-         .catch(e => Util.handleError(e));
+      const response = await (this.setting.useLsxPlugin
+         ? this.apiClient.getPagesByLsx(path.posix.join(parentPage.fullPath, '/'), {
+            limit: this.limit,
+            offset: parentPage.nextOffset
+         })
+         : this.apiClient.getPages(path.posix.join(parentPage.fullPath, '/'), {
+            limit: this.limit,
+            offset: parentPage.nextOffset
+         })
+      ).catch(e => Util.handleError(e));
       if (!response) {
          parentPage.loading = false;
          parentPage.done = true;

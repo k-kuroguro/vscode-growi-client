@@ -18,3 +18,5 @@ export type Page = PageBase & {
       format: string
    }
 };
+
+export type Sort = 'path' | 'createdAt' | 'updatedAt';
