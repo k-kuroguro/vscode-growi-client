@@ -118,6 +118,10 @@ class TreeDataProvider implements vscode.TreeDataProvider<TreeItem> {
       Util.showProgress(this.loadChildren(path));
    }
 
+   isLoadedPage(path: string): boolean {
+      return this.itemMap.has(path);
+   }
+
    getTreeItem(element: TreeItem): TreeItem {
       return element;
    }
@@ -249,6 +253,10 @@ export class PageExplorer {
          }),
          ...this.registerCommands()
       );
+   }
+
+   isLoadedPage(path: string): boolean {
+      return this.treeDataProvider.isLoadedPage(path);
    }
 
    dispose(): void {

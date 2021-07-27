@@ -1,5 +1,5 @@
 import { TextEncoder } from 'util';
-import { Disposable, Event, EventEmitter, FileChangeEvent, FileStat as VsFileStat, FileSystemProvider, FileType, Uri, window } from 'vscode';
+import { Disposable, Event, EventEmitter, FileChangeEvent, FileChangeType, FileStat as VsFileStat, FileSystemProvider, FileType, Uri, window } from 'vscode';
 import { ApiClient, ApiClientError } from './apiClient';
 import { SettingsError } from './setting';
 
@@ -52,15 +52,15 @@ export class FsProvider implements FileSystemProvider {
          await this.apiClient
             .updatePage(pagePath, content.toString())
             .catch(e => this.handleError(e));
+         this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]);
       } else {
          if (!options.create) throw ApiClientError.PageIsNotFound(pagePath).message;
          if (content.toString() === '') throw ApiClientError.ContentIsEmpty().message;
          await this.apiClient
             .createPage(pagePath, content.toString())
             .catch(e => this.handleError(e));
+         this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]);
       }
-      //TODO: イベント指定する
-      this._onDidChangeFile.fire([]);
    }
 
    delete(uri: Uri, options: { recursive: boolean; }): void | Thenable<void> {
@@ -81,13 +81,11 @@ export class FsProvider implements FileSystemProvider {
       return path.replace(/.growi$/g, '');
    }
 
-   //TODO: イベント発火の細分化
+   //TODO: イベント発火させる
    private handleError(e: any): never {
       if (e instanceof ApiClientError) {
-         this._onDidChangeFile.fire([]);
          throw e.message;
       } else if (e instanceof SettingsError) {
-         this._onDidChangeFile.fire([]);
          throw e.message;
       }
       throw e;
