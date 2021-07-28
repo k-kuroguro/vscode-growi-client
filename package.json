@@ -31,7 +31,7 @@
             "title": "Set Growi URL"
          },
          {
-            "command": "growi-client.createNewPage",
+            "command": "growi-client.newPage",
             "category": "Growi Client",
             "title": "New Page"
          },

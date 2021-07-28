@@ -1,8 +1,9 @@
-import { ExtensionContext, FileChangeType, workspace } from 'vscode';
+import { ExtensionContext, workspace } from 'vscode';
 import { registerCommands } from './commands';
 import { Setting } from './setting';
 import { ApiClient } from './apiClient';
 import { FsProvider } from './fsProvider';
+import { PathUtil } from './utils/PathUtil';
 
 //TODO: trashの中身も表示・編集できる.
 //TODO: 今はApi Tokenが必須になっているが, 必要ない処理もあるので要修正.
@@ -14,7 +15,7 @@ export async function activate(context: ExtensionContext) {
 
    context.subscriptions.push(
       setting,
-      workspace.registerFileSystemProvider('growi', fsProvider, { isCaseSensitive: true, isReadonly: false }),
+      workspace.registerFileSystemProvider(PathUtil.scheme, fsProvider, { isCaseSensitive: true, isReadonly: false }),
       ...registerCommands(setting, apiClient)
    );
 
