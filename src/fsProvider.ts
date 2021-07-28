@@ -52,14 +52,12 @@ export class FsProvider implements FileSystemProvider {
          await this.apiClient
             .updatePage(pagePath, content.toString())
             .catch(e => this.handleError(e));
-         this._onDidChangeFile.fire([{ type: FileChangeType.Changed, uri }]);
       } else {
          if (!options.create) throw ApiClientError.PageIsNotFound(pagePath).message;
          if (content.toString() === '') throw ApiClientError.ContentIsEmpty().message;
          await this.apiClient
             .createPage(pagePath, content.toString())
             .catch(e => this.handleError(e));
-         this._onDidChangeFile.fire([{ type: FileChangeType.Created, uri }]);
       }
    }
 
