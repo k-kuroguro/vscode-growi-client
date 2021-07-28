@@ -1,8 +1,7 @@
-import * as path from 'path';
 import { commands, window, workspace, ConfigurationTarget, Memento, EventEmitter, Event, Disposable } from 'vscode';
 import { BaseError } from './error';
 
-type ConfigName = 'GrowiURL' | 'RootPath' | 'MaxPagePerTime' | 'UseLsxPlugin';
+type ConfigName = 'GrowiURL' | 'UseLsxPlugin';
 type StateName = 'ApiToken';
 export type SettingName = ConfigName | StateName;
 
@@ -21,8 +20,6 @@ export class Setting {
          workspace.onDidChangeConfiguration(e => {
             if (e.affectsConfiguration('growi-client.growiUrl')) this._onDidChange.fire('GrowiURL');
             if (e.affectsConfiguration('growi-client.useLsxPlugin')) this._onDidChange.fire('UseLsxPlugin');
-            if (e.affectsConfiguration('growi-client.pageExplorer.rootPath')) this._onDidChange.fire('RootPath');
-            if (e.affectsConfiguration('growi-client.pageExplorer.maxPagePerTime')) this._onDidChange.fire('MaxPagePerTime');
          })
       );
       this.apiTokenIsUndefined = !this.apiToken;
@@ -83,32 +80,6 @@ export class Setting {
    set useLsxPlugin(usePlugin: boolean | undefined) {
       workspace.getConfiguration('growi-client').update('useLsxPlugin', usePlugin, ConfigurationTarget.Global);
       this._onDidChange.fire('UseLsxPlugin');
-   }
-
-   //TODO: package.jsonにpattern追加
-   get rootPath(): string {
-      return workspace.getConfiguration('growi-client').get<string>('pageExplorer.rootPath') || '/';
-   }
-
-   set rootPath(rootPath: string | undefined) {
-      if (rootPath === '') rootPath = undefined;
-      if (rootPath) {
-         //TODO: パスの正規化などをクラスに切り出す
-         rootPath = path.normalize(rootPath.trim());
-         if (!rootPath.startsWith('/')) rootPath = '/' + rootPath;
-         if (rootPath.endsWith('/')) rootPath = rootPath.replace(/\/$/, '');
-      }
-      workspace.getConfiguration('growi-client').update('pageExplorer.rootPath', rootPath, ConfigurationTarget.Global);
-      this._onDidChange.fire('RootPath');
-   }
-
-   get maxPagePerTime(): number {
-      return workspace.getConfiguration('growi-client').get<number>('pageExplorer.maxPagePerTime') || 10;
-   }
-
-   set maxPagePerTime(number: number | undefined) {
-      workspace.getConfiguration('growi-client').update('pageExplorer.maxPagePerTime', number, ConfigurationTarget.Global);
-      this._onDidChange.fire('MaxPagePerTime');
    }
 
    //#endregion

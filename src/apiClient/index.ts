@@ -9,6 +9,7 @@ export class ApiClient {
 
    constructor(private setting: Setting) { }
 
+   //TODO: パス管理をクラスに切り出し
    /**
     * パス配下のページ一覧を取得する.
     * @param path 末尾に`/`をつけること

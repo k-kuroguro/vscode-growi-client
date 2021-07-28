@@ -1,7 +1,7 @@
 {
    "name": "growi-client",
    "displayName": "Growi Client",
-   "description": "VSCodeからGrowiの編集・閲覧を行うための拡張機能",
+   "description": "VSCodeからGrowiのページ編集・閲覧を行うための拡張機能",
    "version": "0.0.1",
    "engines": {
       "vscode": "^1.58.0"
@@ -39,111 +39,14 @@
             "command": "growi-client.openPage",
             "category": "Growi Client",
             "title": "Open Page"
-         },
-         {
-            "command": "growi-client.pageExplorer.refresh",
-            "category": "Growi Client",
-            "title": "Refresh Page Explorer",
-            "icon": "$(extensions-refresh)"
-         },
-         {
-            "command": "growi-client.pageExplorer.openPageInBrowser",
-            "category": "Growi Client",
-            "title": "Open In Browser"
-         },
-         {
-            "command": "growi-client.pageExplorer.editPageInBrowser",
-            "category": "Growi Client",
-            "title": "Edit In Browser"
-         },
-         {
-            "command": "growi-client.pageExplorer.createNewPage",
-            "category": "Growi Client",
-            "title": "New Page"
-         },
-         {
-            "command": "growi-client.pageExplorer.refreshChildren",
-            "category": "Growi Client",
-            "title": "Refresh Children"
          }
       ],
-      "views": {
-         "growi-client": [
-            {
-               "id": "growi-client.pageExplorer",
-               "name": "Page Explorer",
-               "icon": "$(files)",
-               "contextualTitle": "Page Explorer"
-            }
-         ]
-      },
       "viewsContainers": {
          "activitybar": [
             {
                "id": "growi-client",
                "title": "Growi Client",
                "icon": "resources/growi-logo.svg"
-            }
-         ]
-      },
-      "viewsWelcome": [
-         {
-            "view": "growi-client.pageExplorer",
-            "contents": "GrowiのURLが未設定です.\n[Set Growi URL](command:growi-client.setGrowiUrl)",
-            "when": "!config.growi-client.growiUrl"
-         },
-         {
-            "view": "growi-client.pageExplorer",
-            "contents": "Api Tokenが未設定です.\n[Set Api Token](command:growi-client.setApiToken)",
-            "when": "growi-client.apiTokenIsUndefined"
-         }
-      ],
-      "menus": {
-         "view/title": [
-            {
-               "command": "growi-client.pageExplorer.refresh",
-               "when": "view == growi-client.pageExplorer",
-               "group": "navigation"
-            }
-         ],
-         "view/item/context": [
-            {
-               "command": "growi-client.pageExplorer.createNewPage",
-               "when": "view == growi-client.pageExplorer && viewItem == Page",
-               "group": "navigation@1"
-            },
-            {
-               "command": "growi-client.pageExplorer.openPageInBrowser",
-               "when": "view == growi-client.pageExplorer && viewItem == Page",
-               "group": "navigation@2"
-            },
-            {
-               "command": "growi-client.pageExplorer.editPageInBrowser",
-               "when": "view == growi-client.pageExplorer && viewItem == Page",
-               "group": "navigation@3"
-            },
-            {
-               "command": "growi-client.pageExplorer.refreshChildren",
-               "when": "view == growi-client.pageExplorer && viewItem == Page",
-               "group": "navigation@4"
-            }
-         ],
-         "commandPalette": [
-            {
-               "command": "growi-client.pageExplorer.openPageInBrowser",
-               "when": "false"
-            },
-            {
-               "command": "growi-client.pageExplorer.editPageInBrowser",
-               "when": "false"
-            },
-            {
-               "command": "growi-client.pageExplorer.createNewPage",
-               "when": "false"
-            },
-            {
-               "command": "growi-client.pageExplorer.refreshChildren",
-               "when": "false"
             }
          ]
       },
@@ -166,17 +69,7 @@
             "growi-client.useLsxPlugin": {
                "type": "boolean",
                "default": false,
-               "description": "`growi-plugin-lsx`プラグインを使用するか.\n使用すると, ソート/フィルタ機能が使用可能になります."
-            },
-            "growi-client.pageExplorer.rootPath": {
-               "type": "string",
-               "default": "/",
-               "description": "Page Explorerのルートパス."
-            },
-            "growi-client.pageExplorer.maxPagePerTime": {
-               "type": "number",
-               "default": 10,
-               "description": "Page Explorerにて, 一度の読み込みで表示する最大のページ数."
+               "description": "`growi-plugin-lsx`プラグインを使用するか.\n使用すると, ソート機能が使用可能になります."
             }
          }
       }
