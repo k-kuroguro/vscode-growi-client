@@ -1,6 +1,6 @@
 import { CancellationTokenSource, window } from 'vscode';
 import { ApiClient } from '../apiClient';
-import { PathUtil } from '../utils/PathUtil';
+import { PathUtil } from '../pathUtil';
 import { openPage } from './openPage';
 
 export async function newPage(apiClient: ApiClient): Promise<void> {

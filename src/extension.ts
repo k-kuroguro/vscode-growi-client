@@ -3,7 +3,7 @@ import { registerCommands } from './commands';
 import { Setting } from './setting';
 import { ApiClient } from './apiClient';
 import { FsProvider } from './fsProvider';
-import { PathUtil } from './utils/PathUtil';
+import { PathUtil } from './pathUtil';
 
 //TODO: trashの中身も表示・編集できる.
 //TODO: 今はApi Tokenが必須になっているが, 必要ない処理もあるので要修正.
