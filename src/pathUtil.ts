@@ -7,6 +7,10 @@ export class PathUtil {
    static readonly ext = 'growi';
    static readonly root = '/';
 
+   static join(...paths: string[]): string {
+      return pathLib.posix.join(...paths);
+   }
+
    static validate(path: string): [boolean, string] {
       if (path === '') return [false, 'パスを入力してください.'];
       if (path.match(/\/{2}/)) return [false, '\'/\'は連続して使用できません.'];
@@ -27,8 +31,8 @@ export class PathUtil {
    static normalize(path: string): string {
       path = path.trim();
       if (!path.startsWith('/')) path = '/' + path;
-      if (path.endsWith('/')) path = path.replace(/\/$/, '');
-      path = pathLib.posix.normalize(path);
+      if (path !== '/' && path.endsWith('/')) path = path.replace(/\/$/, '');
+      if (path !== '/') path = pathLib.posix.normalize(path);
       return path;
    }
 

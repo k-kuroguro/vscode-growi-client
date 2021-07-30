@@ -1,7 +1,8 @@
 import axios from 'axios';
+import { PathUtil } from '../pathUtil';
 import { Setting, SettingsError, SettingName } from '../setting';
 import { ApiClientError } from './error';
-import { Page, PageList, Sort } from './types';
+import { Page, PageBase, PageList, Sort } from './types';
 
 export { ApiClientError } from './error';
 
@@ -9,10 +10,9 @@ export class ApiClient {
 
    constructor(private setting: Setting) { }
 
-   //TODO: パス管理をクラスに切り出し
    /**
     * パス配下のページ一覧を取得する.
-    * @param path 末尾に`/`をつけること
+    * @param path '/'で始まるが, 末尾にはつかない. e.g.'/a/b/c'
     * @param options
     * @throws {@link ApiClientError}<br>
     *    - GrowiUrlIsInvalid
@@ -22,6 +22,7 @@ export class ApiClient {
     */
    async getPages(path: string, options?: { limit?: number, offset?: number }): Promise<PageList> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      path = PathUtil.normalize(PathUtil.join(path, '/'));
       let url = `${growiUrl}_api/pages.list?access_token=${apiToken}&path=${encodeURI(path)}`;
       if (options?.limit) url += `&limit=${options.limit}`;
       if (options?.offset) url += `&offset=${options.offset}`;
@@ -37,7 +38,7 @@ export class ApiClient {
 
    /**
     * lsxプラグインを使用して, パス配下のページ一覧を取得する.
-    * @param path 末尾に`/`をつけること
+    * @param path '/'で始まるが, 末尾にはつかない. e.g.'/a/b/c'
     * @param options
     * @throws {@link ApiClientError}<br>
     *    - GrowiUrlIsInvalid
@@ -53,6 +54,7 @@ export class ApiClient {
       filter?: string
    }): Promise<PageList> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      path = PathUtil.normalize(PathUtil.join(path, '/'));
       const encodedPath = encodeURI(path);
       const defaultLimit = 50;
       let url = `${growiUrl}_api/plugins/lsx?access_token=${apiToken}&pagePath=${encodedPath}`;
@@ -96,6 +98,7 @@ export class ApiClient {
     */
    async getPage(path: string): Promise<Page> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      path = PathUtil.normalize(path);
       const url = `${growiUrl}_api/pages.get?access_token=${apiToken}&path=${encodeURI(path)}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
       if (!response.data.ok) this.handleError(response.data.error || response.data, path);
@@ -115,7 +118,8 @@ export class ApiClient {
     * @throws {@link SettingsError}<br>
     *    - UndefinedSettings
     */
-   async updatePage(path: string, body: string): Promise<Page> {
+   async updatePage(path: string, body: string): Promise<PageBase> {
+      path = PathUtil.normalize(path);
       const page = await this.getPage(path).catch(e => { throw e; });
       const [growiUrl, apiToken] = this.getUrlAndToken();
       const url = `${growiUrl}_api/pages.update`;
@@ -141,6 +145,7 @@ export class ApiClient {
     */
    async pageExists(path: string): Promise<boolean> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      path = PathUtil.normalize(path);
       const pagePaths = encodeURI(`["${path}"]`);
       const url = `${growiUrl}_api/pages.exist?access_token=${apiToken}&pagePaths=${pagePaths}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
@@ -162,6 +167,7 @@ export class ApiClient {
     */
    async createPage(path: string, body: string): Promise<Page> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
+      path = PathUtil.normalize(path);
       const url = `${growiUrl}_api/v3/pages`;
       const response = await axios.post(url, {
          access_token: apiToken,

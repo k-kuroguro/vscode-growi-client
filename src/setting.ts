@@ -1,5 +1,5 @@
 import { commands, window, workspace, ConfigurationTarget, Memento, EventEmitter, Event, Disposable, WorkspaceConfiguration } from 'vscode';
-import { extensionId } from './constants';
+import { extensionName } from './constants';
 import { BaseError } from './error';
 
 type ConfigName = 'GrowiURL' | 'UseLsxPlugin';
@@ -19,8 +19,8 @@ export class Setting {
       state.setKeysForSync(['apiToken']);
       this.disposables.push(
          workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration(`${extensionId}.growiUrl`)) this._onDidChange.fire('GrowiURL');
-            if (e.affectsConfiguration(`${extensionId}.useLsxPlugin`)) this._onDidChange.fire('UseLsxPlugin');
+            if (e.affectsConfiguration(`${extensionName}.growiUrl`)) this._onDidChange.fire('GrowiURL');
+            if (e.affectsConfiguration(`${extensionName}.useLsxPlugin`)) this._onDidChange.fire('UseLsxPlugin');
          })
       );
       this.apiTokenIsUndefined = !this.apiToken;
@@ -30,8 +30,8 @@ export class Setting {
       this.disposables.forEach(d => d.dispose());
    }
 
-   private getConfiguration(): WorkspaceConfiguration{
-      return workspace.getConfiguration(extensionId);
+   private getConfiguration(): WorkspaceConfiguration {
+      return workspace.getConfiguration(extensionName);
    }
 
    //#region state

@@ -1,4 +1,4 @@
-type PageBase = {
+export type PageBase = {
    id: string,
    path: string
 };
