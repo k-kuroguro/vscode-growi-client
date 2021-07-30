@@ -1,4 +1,5 @@
-import { commands, window, workspace, ConfigurationTarget, Memento, EventEmitter, Event, Disposable } from 'vscode';
+import { commands, window, workspace, ConfigurationTarget, Memento, EventEmitter, Event, Disposable, WorkspaceConfiguration } from 'vscode';
+import { extensionId } from './constants';
 import { BaseError } from './error';
 
 type ConfigName = 'GrowiURL' | 'UseLsxPlugin';
@@ -18,8 +19,8 @@ export class Setting {
       state.setKeysForSync(['apiToken']);
       this.disposables.push(
          workspace.onDidChangeConfiguration(e => {
-            if (e.affectsConfiguration('growi-client.growiUrl')) this._onDidChange.fire('GrowiURL');
-            if (e.affectsConfiguration('growi-client.useLsxPlugin')) this._onDidChange.fire('UseLsxPlugin');
+            if (e.affectsConfiguration(`${extensionId}.growiUrl`)) this._onDidChange.fire('GrowiURL');
+            if (e.affectsConfiguration(`${extensionId}.useLsxPlugin`)) this._onDidChange.fire('UseLsxPlugin');
          })
       );
       this.apiTokenIsUndefined = !this.apiToken;
@@ -27,6 +28,10 @@ export class Setting {
 
    dispose(): void {
       this.disposables.forEach(d => d.dispose());
+   }
+
+   private getConfiguration(): WorkspaceConfiguration{
+      return workspace.getConfiguration(extensionId);
    }
 
    //#region state
@@ -60,7 +65,7 @@ export class Setting {
       *  - 'http://127.0.0.1/'
       */
    get growiUrl(): string | undefined {
-      return workspace.getConfiguration('growi-client').get<string>('growiUrl');
+      return this.getConfiguration().get<string>('growiUrl');
    }
 
    set growiUrl(url: string | undefined) {
@@ -69,16 +74,16 @@ export class Setting {
          if (!url.endsWith('/')) url = url + '/';
          url = encodeURI(url);
       }
-      workspace.getConfiguration('growi-client').update('growiUrl', url, ConfigurationTarget.Global);
+      this.getConfiguration().update('growiUrl', url, ConfigurationTarget.Global);
       this._onDidChange.fire('GrowiURL');
    }
 
    get useLsxPlugin(): boolean {
-      return workspace.getConfiguration('growi-client').get<boolean>('useLsxPlugin') ?? false;
+      return this.getConfiguration().get<boolean>('useLsxPlugin') ?? false;
    }
 
    set useLsxPlugin(usePlugin: boolean | undefined) {
-      workspace.getConfiguration('growi-client').update('useLsxPlugin', usePlugin, ConfigurationTarget.Global);
+      this.getConfiguration().update('useLsxPlugin', usePlugin, ConfigurationTarget.Global);
       this._onDidChange.fire('UseLsxPlugin');
    }
 
