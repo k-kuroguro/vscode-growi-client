@@ -1,8 +1,8 @@
 import axios from 'axios';
-import { PathUtil } from '../pathUtil';
+import * as utils from '../utils';
 import { Setting, SettingsError, SettingName } from '../setting';
 import { ApiClientError } from './error';
-import { Page, PageBase, PageList, Sort } from './types';
+import { Page, PageBase } from './types';
 
 export { ApiClientError } from './error';
 
@@ -23,7 +23,7 @@ export class ApiClient {
     */
    async getPage(path: string): Promise<Page> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
-      path = PathUtil.normalize(path);
+      path = utils.path.normalize(path);
       const url = `${growiUrl}_api/pages.get?access_token=${apiToken}&path=${encodeURI(path)}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
       if (!response.data.ok) this.handleError(response.data.error || response.data, path);
@@ -44,7 +44,7 @@ export class ApiClient {
     *    - UndefinedSettings
     */
    async updatePage(path: string, body: string): Promise<PageBase> {
-      path = PathUtil.normalize(path);
+      path = utils.path.normalize(path);
       const page = await this.getPage(path).catch(e => { throw e; });
       const [growiUrl, apiToken] = this.getUrlAndToken();
       const url = `${growiUrl}_api/pages.update`;
@@ -70,7 +70,7 @@ export class ApiClient {
     */
    async pageExists(path: string): Promise<boolean> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
-      path = PathUtil.normalize(path);
+      path = utils.path.normalize(path);
       const pagePaths = encodeURI(`["${path}"]`);
       const url = `${growiUrl}_api/pages.exist?access_token=${apiToken}&pagePaths=${pagePaths}`;
       const response = await axios.get(url).catch(e => this.handleError(e));
@@ -92,7 +92,7 @@ export class ApiClient {
     */
    async createPage(path: string, body: string): Promise<Page> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
-      path = PathUtil.normalize(path);
+      path = utils.path.normalize(path);
       const url = `${growiUrl}_api/v3/pages`;
       const response = await axios.post(url, {
          access_token: apiToken,

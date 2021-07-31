@@ -1,6 +1,6 @@
+import * as utils from '../utils';
 import { CancellationTokenSource, window, workspace } from 'vscode';
 import { ApiClient } from '../apiClient';
-import { PathUtil } from '../pathUtil';
 
 export async function openPage(apiClient: ApiClient, path?: string): Promise<void> {
    const uri = await (async () => {
@@ -25,7 +25,7 @@ export async function openPage(apiClient: ApiClient, path?: string): Promise<voi
          tokenSrc.dispose();
          if (!path || path === '') return;
       }
-      return PathUtil.toUri(path);
+      return utils.path.toUri(path);
    })();
    if (!uri) return;
 

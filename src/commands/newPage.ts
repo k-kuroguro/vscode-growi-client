@@ -1,6 +1,6 @@
+import * as utils from '../utils';
 import { CancellationTokenSource, window } from 'vscode';
 import { ApiClient } from '../apiClient';
-import { PathUtil } from '../pathUtil';
 import { openPage } from './openPage';
 
 export async function newPage(apiClient: ApiClient): Promise<void> {
@@ -10,8 +10,8 @@ export async function newPage(apiClient: ApiClient): Promise<void> {
       prompt: '作成するページのパスを入力してください.',
       valueSelection: [1, 1],
       validateInput: async (value: string): Promise<string> => {
-         const [isValid, message] = PathUtil.validate(value);
-         if (!isValid) message;
+         const [isValid, message] = utils.path.validate(value);
+         if (!isValid) return message;
          if (await apiClient
             .pageExists(value)
             .catch(e => {
@@ -24,5 +24,5 @@ export async function newPage(apiClient: ApiClient): Promise<void> {
    tokenSrc.dispose();
    if (!input || input === '') return;
 
-   openPage(apiClient, PathUtil.normalize(input));
+   openPage(apiClient, utils.path.normalize(input));
 }
