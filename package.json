@@ -2,6 +2,7 @@
    "name": "growi-client",
    "displayName": "Growi Client",
    "description": "VSCodeからGrowiのページ編集・閲覧を行うための拡張機能",
+   "publisher": "k-kuroguro",
    "version": "0.0.1",
    "engines": {
       "vscode": "^1.58.0"
