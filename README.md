@@ -10,7 +10,7 @@ Growi 4.2.21でテスト済み.
 
 # インストール
 
-[リリース](/k-kuroguro/vscode-growi-client/releases/download/1.0.0/growi-client-1.0.0.vsix)から最新のバージョンをダウンロードして, VSCodeにインストールしてください. ([参考](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix))
+[リリース](https://github.com/k-kuroguro/vscode-growi-client/releases)から最新のバージョンをダウンロードして, VSCodeにインストールしてください. ([参考](https://code.visualstudio.com/docs/editor/extension-marketplace#_install-from-a-vsix))
 
 # セットアップ
 
