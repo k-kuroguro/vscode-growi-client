@@ -3,13 +3,22 @@
    "displayName": "Growi Client",
    "description": "VSCodeからGrowiのページ編集・閲覧を行うための拡張機能",
    "publisher": "k-kuroguro",
-   "version": "0.0.1",
+   "version": "1.0.0",
    "engines": {
       "vscode": "^1.58.0"
    },
    "categories": [
       "Other"
    ],
+   "license": "MIT",
+   "homepage": "https://github.com/k-kuroguro/vscode-growi-client/blob/master/README.md",
+   "repository": {
+      "type": "git",
+      "url": "https://github.com/k-kuroguro/vscode-growi-client.git"
+   },
+   "bugs": {
+      "url": "https://github.com/k-kuroguro/vscode-growi-client/issues"
+   },
    "activationEvents": [
       "*"
    ],
