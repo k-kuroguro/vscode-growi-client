@@ -1,4 +1,4 @@
-# VSCode Growi Client
+# Growi Client
 
 VSCodeからGrowiのページ編集・閲覧を行うための拡張機能.
 
