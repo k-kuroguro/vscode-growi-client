@@ -22,6 +22,7 @@ export async function openPage(apiClient: ApiClient, path?: string): Promise<voi
                return '';
             }
          }, tokenSrc.token);
+
          tokenSrc.dispose();
          if (!path || path === '') return;
       }
@@ -32,7 +33,7 @@ export async function openPage(apiClient: ApiClient, path?: string): Promise<voi
    const doc = await (async () => {
       try {
          return await workspace.openTextDocument(uri);
-      } catch (e) {
+      } catch (e: any) {
          window.showErrorMessage(e.message || e);
          return;
       }

@@ -24,10 +24,14 @@ export class ApiClient {
    async getPage(path: string): Promise<Page> {
       const [growiUrl, apiToken] = this.getUrlAndToken();
       path = utils.path.normalize(path);
-      const url = `${growiUrl}_api/pages.get?access_token=${apiToken}&path=${encodeURI(path)}`;
-      const response = await axios.get(url).catch(e => this.handleError(e));
-      if (!response.data.ok) this.handleError(response.data.error || response.data, path);
-      if (response.data.page.redirectTo === `/trash${path}`) throw ApiClientError.PageHasMovedToTrash(path);
+      const url = `${growiUrl}_api/v3/page?access_token=${apiToken}&path=${encodeURI(path)}`;
+      const response = await axios.get(url).catch(e => {
+         if (axios.isAxiosError(e)) {
+            if (e.response && e.response.status === 404) throw ApiClientError.PageIsNotFound(path);
+         }
+         this.handleError(e);
+      });
+      if (response.data.errors) this.handleError(response.data.errors[0].code || response.data.errors, path);
       return response.data.page as Page;
    }
 
@@ -104,7 +108,7 @@ export class ApiClient {
          }
       }).catch(e => this.handleError(e));
       if (response.data.errors) this.handleError(response.data.errors[0].code || response.data.errors, path); //TODO: エラーを1つしか確認していない.
-      return { ...response.data.data.page, revision: response.data.data.revision } as Page;
+      return { ...response.data.page, revision: response.data.revision } as Page;
    }
 
    private getUrlAndToken(): [string, string] {
